@@ -6,6 +6,44 @@ __pycache__/
 # C extensions
 *.so
 
+#Latex files
+# LaTeX intermediate files
+*.aux
+*.bbl
+*.blg
+*.brf
+*.idx
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+
+# PDFLatex output files
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.xdv
+
+# Output PDFs
+*.pdf
+
+# Temporary files
+*.tmp
+*.bak
+
+# Miscellaneous
+*.run.xml
+
+
 # Distribution / packaging
 .Python
 build/
