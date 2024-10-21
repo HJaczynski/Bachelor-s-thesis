@@ -49,7 +49,7 @@
 % ABSTRACT
 \section*{Abstract}
 \addcontentsline{toc}{section}{Abstract}
-This section is dedicated to the abstract of our thesis.
+The aim of this work is to develop an application that leverages computer vision to analyze football match footage and extract comprehensive statistics about the players and the match overall. This project involves implementing a computer vision model to accurately identify and track key components in the footage, including players, balls, goalposts, and referees. With these components recognized, the next focus will be on computing detailed match statistics and relevant metrics. The main objective is to provide valuable insights into football matches, enhancing both player performance analysis and game strategy evaluation. To achieve proper analysis, the DFL - Bundesliga Data Shootout dataset will be used, which consists of 460, 30 second videos in mp4 format from various football matches. The implementation will be carried out in Python, with the use of OpenCV, YOLO and Roboflow.
 
 % HISTORY OF CHANGES
 \section{History of Changes}
@@ -67,11 +67,11 @@ This section is dedicated to the abstract of our thesis.
 % VOCABULARY
 \pagebreak
 \section{Vocabulary}
-\textbf{Machine Learning} - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+\textbf{You Only Look Once (YOLO)} - real-time object detection algorithm that frames detection as a single regression problem, predicting bouding boxes and class probabilities directly from full images. YOLO is known for its speed and accuracy, making it a popular choice for object detection tasks \cite{Yolo}.
 
 \vspace{1em}
 
-\noindent \textbf{Computer Vision} - The study of digital
+\noindent \textbf{Computer Vision (CV)} - The study of digital
 image structures and patterns, which is a layer of image analysis above that of
 image processing and photonics. Computer vision includes image processing and
 photonics in its bag of tricks in its pursuit of image geometry and image region
@@ -79,7 +79,24 @@ patterns \cite{Peters2017}.
 
 \vspace{1em}
 
-\noindent \textbf{Large Language Models} - Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+\noindent \textbf{Deep Learning} - sub-field of machine learning that involves the use of large neural networks to create models which are able to make accurate data-driven decisions. Suitable for creating models based on complex and substantial in size datasets. As such deep learning models are widely used in modern technologies like smartphones and self-driving cars as well as healthcare
+\cite{Kelleher2019}.
+
+\vspace{1em}
+
+\noindent \textbf{Convolutional Neural Network (CNN)} - type of neural network designed to process grid-like data, such as images. It uses the mathematical operation convolution to automatically detect features like edges and textures. This makes CNNs highly effective for tasks like image recognition by preserving spatial relationships between pixels. They have been widely successful in computer vision applications \cite{Ian GoodfellowDeepLearning}.
+
+\vspace{1em}
+
+\noindent \textbf{OpenCV} - open-source computer vision library designed for real-time applications. It provides a wide range of tools for image processing, including object detection, image recognition, and image segmentation. OpenCV is written in C and C++ and has bindings for Python, making it a popular choice for computer vision projects \cite{OpenCV}.
+
+\vspace{1em}
+
+\noindent \textbf{Roboflow} - Tool that simplifies the process of training computer vision models. It allows users to upload, annotate, and preprocess images, before exporting them in a format suitable for training. Roboflow supports a wide range of model architectures and frameworks, making it a versatile tool for computer vision projects. \cite{Roboflow}
+
+\vspace{1em}
+
+\noindent \textbf{DFL - Bundesliga Data Shootout Dataset} - Dataset created as part of the Bundesliga Data Shootout competiotion, organized by DFL in partnerhip with Amazon Web Services and Sportec Solutions AG. It consists of video clips from Bundesliga football matches, with the goal of providing a dataset for the development of innovative data-driven solutions for football analysis. \cite{DFL Bundesliga Data Shootout}
 
 % SPECIFICATIONS
 \pagebreak
@@ -163,14 +180,29 @@ A detailed description of weaknesses and threats can be found in the subsections
 \begin{thebibliography}{9}
 \addcontentsline{toc}{section}{Bibliography}
 
+\bibitem{Yolo}
+Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi (2016). \textit{You Only Look Once: Unified, Real-Time Object Detection}. Institue of Electrical and Electronics Engineers (IEEE).
+
 \bibitem{Peters2017}
 Peters, J. F. (2017). \textit{Foundations of Computer Vision: Computational Geometry, Visual Image Structures and Object Shape Detection}. Springer International Publishing AG.
 
-\bibitem{Author Y}
+\bibitem{DFL Bundesliga Data Shootout}
+DFL Bundesliga Data Shootout. (2022). {Bundesliga}.\\ Available at: \url{https://www.bundesliga.com/en/aws-bundesliga-data-shootout}
 
-\bibitem{Author Z}
+\bibitem{Kelleher2019}
+Kelleher, John D. (2019). \textit{Deep Learning}. MIT Press.
 
-\end{thebibliography}
+\bibitem{Ian GoodfellowDeepLearning}
+Ian Goodfellow and Yoshua Bengio and Aaron Courville (2016). \textit{Deep Learning}. MIT Press.
+
+\bibitem{OpenCV}
+Gary Bradski, Adrian Kaehler (2008). \textit{Learning OpenCV}. O'Reilly Media, Inc.
+
+\bibitem{Roboflow}
+Mohammad Faizar (2022). \textit{Roboflow}.\\ Available at: \url{https://medium.com/red-buffer/roboflow-d4e8c4b52515}
+
+
+\end{thebibliography} 
 
 
 \end{document}
