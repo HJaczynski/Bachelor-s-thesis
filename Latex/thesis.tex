@@ -5,6 +5,7 @@
 \usepackage{hyperref} % For hyperlinks
 \usepackage{array}
 \usepackage{MnSymbol}
+\usepackage{multirow}
 
 % Set margins for the page
 \geometry{a4paper, margin=1in}
@@ -62,12 +63,13 @@ The aim of this work is to develop an application that leverages computer vision
 \textbf{Version} & \textbf{Date} & \textbf{Author} & \textbf{Description} \\ \hline
 01 & 18/10/2024 & Osman Aliyev Hubert Jaczyński Aleksander Klepka  & Abstract, Vocabulary, Specification, Project Schedule and Risk Analysis \\ \hline
 \end{tabular}
+\caption{History of Changes to the project}
 \end{table}
 
 % VOCABULARY
 \pagebreak
 \section{Vocabulary}
-\textbf{You Only Look Once (YOLO)} - real-time object detection algorithm that frames detection as a single regression problem, predicting bouding boxes and class probabilities directly from full images. YOLO is known for its speed and accuracy, making it a popular choice for object detection tasks \cite{Yolo}.
+\textbf{You Only Look Once (YOLO)} - Real-time object detection algorithm that frames detection as a single regression problem, predicting bounding boxes and class probabilities directly from full images. YOLO is known for its speed and accuracy, making it a popular choice for object detection tasks \cite{Yolo}.
 
 \vspace{1em}
 
@@ -88,7 +90,7 @@ patterns \cite{Peters2017}.
 
 \vspace{1em}
 
-\noindent \textbf{OpenCV} - open-source computer vision library designed for real-time applications. It provides a wide range of tools for image processing, including object detection, image recognition, and image segmentation. OpenCV is written in C and C++ and has bindings for Python, making it a popular choice for computer vision projects \cite{OpenCV}.
+\noindent \textbf{OpenCV} - Open-source computer vision library designed for real-time applications. It provides a wide range of tools for image processing, including object detection, image recognition, and image segmentation. OpenCV is written in C and C++ and has bindings for Python, making it a popular choice for computer vision projects \cite{OpenCV}.
 
 \vspace{1em}
 
@@ -103,6 +105,26 @@ patterns \cite{Peters2017}.
 \section{Specification}
 \subsection{Executive Summary}
 \subsection{Functional Requirements}
+\begin{table}[ht]
+\centering
+\begin{tabular}{| 
+>{\centering\arraybackslash}p{1cm} | 
+>{\centering\arraybackslash}p{1cm} | 
+>{\centering\arraybackslash}p{2cm} | 
+>{\centering\arraybackslash}p{2cm} |
+>{\centering\arraybackslash}p{4cm} |} 
+\hline
+\textbf{Id} & \textbf{Actor} & \textbf{Name} & \textbf{Description} & \textbf{System Response} \\ \hline
+
+User & User & Name 1 & Desc 1 & SR 1 \\ \hline
+User & User & Name 2 & Desc 2 & SR 2 \\ \hline
+User & User & Name 3 & Desc 3 & SR 3 \\ \hline
+User & User & Name 4 & Desc 4 & SR 4 \\ \hline
+
+\end{tabular}
+\caption{Description of the Use Cases diagram}
+\end{table}
+
 \subsection{Non-functional Requirements}
 \subsubsection{Usability}
 \subsubsection{Reliability}
@@ -121,9 +143,9 @@ patterns \cite{Peters2017}.
 {\centering\arraybackslash}p{1.25cm} |} 
 \hline
 \textbf{No} & \textbf{Task} & \textbf{Author} & \textbf{Start Date} & \textbf{End Date} & \textbf{Status}\\ \hline
-1 & task 1 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 30/09/2024 & End Date & $\checkmark$ \\ \hline
-2 & task 2 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & $\checkmark$ \\ \hline
-3 & task 3 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & $\checkmark$ \\ \hline
+1 & Project Topic Definition & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 30/09/2024 & End Date & $\checkmark$ \\ \hline
+2 & Project Details Planning & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & $\checkmark$ \\ \hline
+3 & Project Topic Description & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & $\checkmark$ \\ \hline
 4 & task 4 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & \\ \hline
 5 & task 5 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & \\ \hline
 6 & task 6 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & \\ \hline
@@ -136,6 +158,7 @@ patterns \cite{Peters2017}.
 13 & task 13 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date &  \\ \hline
 14 & task 14 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date &  \\ \hline
 \end{tabular}
+\caption{Project Schedule}
 \end{table}
 
 % RISK ANALYSIS
@@ -144,23 +167,23 @@ patterns \cite{Peters2017}.
 SWOT analysis was utilized to conduct a thorough risk assessment of the project.
 \subsection{Strengths (Internal)}
 \begin{itemize}
-  \item Item 1
-  \item Item 2
-  \item Item 3
+  \item History of successful collaborations on past projects.
+  \item Effective time management and leadership support which drives goals completion.
+  \item Experience in Machine Learning, Python, Front End Development,\\ and overall Football knowledge.
 \end{itemize}
 
 \subsection{Weaknesses (Internal)}
 \begin{itemize}
-  \item Item 1
-  \item Item 2
-  \item Item 3
+  \item Set and limited amount of time to complete the project.
+  \item Delays in the predefined schedule.
+  \item 
 \end{itemize}
 
 \subsection{Opportunities (External)}
 \begin{itemize}
-  \item Item 1
-  \item Item 2
-  \item Item 3
+  \item Persistent and insightful support from the supervisor.
+  \item Rich amount of highly informative and widely available resources related \\to the topic of the project.
+  \item Significant value of the project, which will contirbue to professional development.
 \end{itemize}
 
 \subsection{Threats (External)}
@@ -169,10 +192,68 @@ SWOT analysis was utilized to conduct a thorough risk assessment of the project.
   \item Item 2
   \item Item 3
 \end{itemize}
-A detailed description of weaknesses and threats can be found in the subsections below.
-\subsubsection{Threat - Item 1}
-\subsubsection{Threat - Item 2}
-\subsubsection{Threat - Item 3}
+A detailed description of weaknesses and threats can be found in the section below.
+\subsection{Activities to minimize the chances of weaknesses and threats}
+
+% WEAKNESS 1
+\subsubsection{Set and limited amount of time to complete the project}
+\noindent \textbf{Value: } Not likely.
+
+\vspace{0.5em}
+\noindent \textbf{Source of Weakness:} FILL.
+
+\vspace{0.5em}
+\noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
+
+% WEAKNESS 2
+\subsubsection{Delays in the predefined schedule}
+\noindent \textbf{Value: } Not likely.
+
+\vspace{0.5em}
+\noindent \textbf{Source of Weakness:} FILLWEAKNESS.
+
+\vspace{0.5em}
+\noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
+
+% WEAKNESS 3
+\subsubsection{Weakness 3}
+\noindent \textbf{Value: } Not likely.
+
+\vspace{0.5em}
+\noindent \textbf{Source of Weakness:} FILLWEAKNESS.
+
+\vspace{0.5em}
+\noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
+
+% THREAT 1
+\subsubsection{Threat 1}
+\noindent \textbf{Value: } Not likely.
+
+\vspace{0.5em}
+\noindent \textbf{Source of Weakness:} FILLWEAKNESS.
+
+\vspace{0.5em}
+\noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
+
+% THREAT 2
+\subsubsection{Threat 2}
+\noindent \textbf{Value: } Not likely.
+
+\vspace{0.5em}
+\noindent \textbf{Source of Weakness:} FILLWEAKNESS.
+
+\vspace{0.5em}
+\noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
+
+% THREAT 3
+\subsubsection{Threat 3}
+\noindent \textbf{Value: } Not likely.
+
+\vspace{0.5em}
+\noindent \textbf{Source of Weakness:} FILLWEAKNESS.
+
+\vspace{0.5em}
+\noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
 
 % BIBLIOGRAPHY
 \pagebreak
@@ -200,9 +281,6 @@ Gary Bradski, Adrian Kaehler (2008). \textit{Learning OpenCV}. O'Reilly Media, I
 
 \bibitem{Roboflow}
 Mohammad Faizar (2022). \textit{Roboflow}.\\ Available at: \url{https://medium.com/red-buffer/roboflow-d4e8c4b52515}
-
-
 \end{thebibliography} 
-
 
 \end{document}
