@@ -104,28 +104,41 @@ patterns \cite{Peters2017}.
 \pagebreak
 \section{Specification}
 \subsection{Executive Summary}
+
+
 \subsection{Functional Requirements}
+As a user, I would like to:
+\begin{itemize}
+    \item Select a specific clip from a predefined list of analyzed data. (Must have)
+    \item Upload a football clip and send it for analysis so that the model can process the video. (Could have)
+    \item View the insights after the analysis of the football clip so that I can understand the key findings and insights. (Must have)
+    \item Search for a football player so that a dashboard displaying the player's information is shown. (Must have)
+    \item Filter the data in the dashboard by specific criteria so that I can view relevant information tailored to my needs. (Must have)
+\end{itemize}
+
 \begin{table}[ht]
 \centering
 \begin{tabular}{| 
 >{\centering\arraybackslash}p{1cm} | 
 >{\centering\arraybackslash}p{1cm} | 
 >{\centering\arraybackslash}p{2cm} | 
->{\centering\arraybackslash}p{2cm} |
+>{\centering\arraybackslash}p{4cm} |
 >{\centering\arraybackslash}p{4cm} |} 
 \hline
 \textbf{Id} & \textbf{Actor} & \textbf{Name} & \textbf{Description} & \textbf{System Response} \\ \hline
 
-User & User & Name 1 & Desc 1 & SR 1 \\ \hline
-User & User & Name 2 & Desc 2 & SR 2 \\ \hline
-User & User & Name 3 & Desc 3 & SR 3 \\ \hline
-User & User & Name 4 & Desc 4 & SR 4 \\ \hline
-
+\multirow{5}{*}{User} & \multirow{5}{*}{User} & Static List of Analyzed Clips & Displays a static list of previously analyzed video clips for the user. The user can view, filter, or select from the list. & The system shall present a static list of analyzed clips, allowing users to filter by criteria such as date or category. \\ \cline{3-5}
+                       &                        & Uploading Videos & Allows users to upload video files for analysis. & The system shall enable users to upload videos in various formats such as MP4, MOV, etc. \\ \cline{3-5}
+                       &                        & Analysis of the uploaded Clips & Performs automatic analysis of the uploaded clips and presents results such as key moments, player performance, etc. & The system shall analyze the uploaded clips using predefined algorithms and present key results based on player performance and game statistics. \\ \cline{3-5}
+                       &                        & Player Statistics Dashboard & Presents a dashboard which displays the statistics and information about the user-selected player. & The system shall call the Transfermarkt API / refer to Transfermarkt data and display it in a dashboard. \\ \cline{3-5}
+                       &                        & Filter Dashboard & Provides filtering options for dashboard data, allowing users to refine their search by criteria such as player name, player team, and date range. & The system shall allow users to filter dashboard data by various criteria such as player name, player team, and date range. \\ \hline
 \end{tabular}
 \caption{Description of the Use Cases diagram}
 \end{table}
 
+
 \subsection{Non-functional Requirements}
+The following section breaks down the non-functional requirements of the project, which were grouped ino URPS categories.
 \subsubsection{Usability}
 \subsubsection{Reliability}
 \subsubsection{Performance}
@@ -143,20 +156,22 @@ User & User & Name 4 & Desc 4 & SR 4 \\ \hline
 {\centering\arraybackslash}p{1.25cm} |} 
 \hline
 \textbf{No} & \textbf{Task} & \textbf{Author} & \textbf{Start Date} & \textbf{End Date} & \textbf{Status}\\ \hline
-1 & Project Topic Definition & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 30/09/2024 & End Date & $\checkmark$ \\ \hline
-2 & Project Details Planning & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & $\checkmark$ \\ \hline
-3 & Project Topic Description & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & $\checkmark$ \\ \hline
-4 & task 4 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & \\ \hline
-5 & task 5 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & \\ \hline
-6 & task 6 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & \\ \hline
-7 & task 7 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date &  \\ \hline
-8 & task 8 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & \\ \hline
-9 & task 9 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date &  \\ \hline
-10 & task 10 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date &  \\ \hline
-11 & task 11 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date & \\ \hline
-12 & task 12 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date &  \\ \hline
-13 & task 13 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date &  \\ \hline
-14 & task 14 & Osman Aliyev Hubert Jaczyński Aleksander Klepka & Start Date & End Date &  \\ \hline
+1 & Project Topic Definition & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 30/09/2024 & 2/10/2024 & $\checkmark$ \\ \hline
+2 & Project Details Planning & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 3/10/2024 & 10/10/2024 & $\checkmark$ \\ \hline
+3 & Project Topic Description & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 11/10/2024 & 17/10/2024 & $\checkmark$ \\ \hline
+4 & Problem Analysis and Research & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 12/10/2024 & 28/10/2024 & \\ \hline
+5 & Project Solution Description & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 29/10/2024 & 7/11/2024 & \\ \hline
+6 & Data Collection and Preparation / Setting up API & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 8/11/2024 & 10/11/2024 & \\ \hline
+7 & Fine Tuning Existing Model & Hubert Jaczyński Aleksander Klepka & 11/11/2024 & 13/11/2024 &  \\ \hline
+8 & GUI Implementation & Osman Aliyev Aleksander Klepka & 14/11/2024 & 17/11/2024 & \\ \hline
+9 & Dashboard Implementation & Osman Aliyev Aleksander Klepka & 18/11/2024 & 20/11/2024 &  \\ \hline
+10 & Model Implementation & Hubert Jaczyński Aleksander Klepka & 21/11/2024 & 5/12/2024 &  \\ \hline
+11 & Unit Testing & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 6/12/2024 & 9/12/2024 & \\ \hline
+12 & Integration, System and
+Acceptance Testing & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 10/12/2024 & 14/12/2024 &  \\ \hline
+13 & Project Evaluation and Final
+Documentation
+ & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 15/12/2024 & 20/12/2024 &  \\ \hline
 \end{tabular}
 \caption{Project Schedule}
 \end{table}
@@ -176,7 +191,7 @@ SWOT analysis was utilized to conduct a thorough risk assessment of the project.
 \begin{itemize}
   \item Set and limited amount of time to complete the project.
   \item Delays in the predefined schedule.
-  \item 
+  \item Spending a considerable amount of time adapting to new technologies.
 \end{itemize}
 
 \subsection{Opportunities (External)}
@@ -188,16 +203,24 @@ SWOT analysis was utilized to conduct a thorough risk assessment of the project.
 
 \subsection{Threats (External)}
 \begin{itemize}
-  \item Item 1
-  \item Item 2
-  \item Item 3
+  \item Lack of efficient computing power.
+  \item Poor data quality.
+  \item Incompatibility between certain components of the project.
 \end{itemize}
+
 A detailed description of weaknesses and threats can be found in the section below.
 \subsection{Activities to minimize the chances of weaknesses and threats}
+\begin{enumerate}
+    \item Very unlikely
+    \item Unlikely
+    \item Possible
+    \item Likely
+    \item Very likely
+\end{enumerate}
 
 % WEAKNESS 1
 \subsubsection{Set and limited amount of time to complete the project}
-\noindent \textbf{Value: } Not likely.
+\noindent \textbf{Value: } Very unlikely.
 
 \vspace{0.5em}
 \noindent \textbf{Source of Weakness:} FILL.
@@ -207,7 +230,7 @@ A detailed description of weaknesses and threats can be found in the section bel
 
 % WEAKNESS 2
 \subsubsection{Delays in the predefined schedule}
-\noindent \textbf{Value: } Not likely.
+\noindent \textbf{Value: } Possible.
 
 \vspace{0.5em}
 \noindent \textbf{Source of Weakness:} FILLWEAKNESS.
@@ -216,8 +239,8 @@ A detailed description of weaknesses and threats can be found in the section bel
 \noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
 
 % WEAKNESS 3
-\subsubsection{Weakness 3}
-\noindent \textbf{Value: } Not likely.
+\subsubsection{Spending a considerable amount of time adapting to new technologies}
+\noindent \textbf{Value: } Possible.
 
 \vspace{0.5em}
 \noindent \textbf{Source of Weakness:} FILLWEAKNESS.
@@ -226,8 +249,8 @@ A detailed description of weaknesses and threats can be found in the section bel
 \noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
 
 % THREAT 1
-\subsubsection{Threat 1}
-\noindent \textbf{Value: } Not likely.
+\subsubsection{Lack of efficient computing power}
+\noindent \textbf{Value: } Likely.
 
 \vspace{0.5em}
 \noindent \textbf{Source of Weakness:} FILLWEAKNESS.
@@ -236,8 +259,8 @@ A detailed description of weaknesses and threats can be found in the section bel
 \noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
 
 % THREAT 2
-\subsubsection{Threat 2}
-\noindent \textbf{Value: } Not likely.
+\subsubsection{Poor data quality}
+\noindent \textbf{Value: } Unlikely.
 
 \vspace{0.5em}
 \noindent \textbf{Source of Weakness:} FILLWEAKNESS.
@@ -246,8 +269,8 @@ A detailed description of weaknesses and threats can be found in the section bel
 \noindent \textbf{Activities to minimize chances of occurrence:} FILLACTIVITY.
 
 % THREAT 3
-\subsubsection{Threat 3}
-\noindent \textbf{Value: } Not likely.
+\subsubsection{Incompatibility between certain components of the project}
+\noindent \textbf{Value: } Possible.
 
 \vspace{0.5em}
 \noindent \textbf{Source of Weakness:} FILLWEAKNESS.
