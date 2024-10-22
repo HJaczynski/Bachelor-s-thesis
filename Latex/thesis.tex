@@ -100,6 +100,10 @@ patterns \cite{Peters2017}.
 
 \noindent \textbf{DFL - Bundesliga Data Shootout Dataset} - Dataset created as part of the Bundesliga Data Shootout competiotion, organized by DFL in partnerhip with Amazon Web Services and Sportec Solutions AG. It consists of video clips from Bundesliga football matches, with the goal of providing a dataset for the development of innovative data-driven solutions for football analysis. \cite{DFL Bundesliga Data Shootout}
 
+\vspace{1em}
+
+\noindent \textbf{Football Data from Transfermarkt Dataset} - A clean and structured dataset containing football data from Transfermarkt, which is a well-known website featuring football statistics, market values, and transfers. It consists of \(60{,}000+\) games from various seasons across all major competitions, \(400+\) clubs from those competitions, \(30{,}000+\) players from those clubs, \(400{,}000+\) historical records of player market valuations, and \(1{,}200{,}000+\) player appearance records from all games.\cite{Davidcariboo}
+
 % SPECIFICATIONS
 \pagebreak
 \section{Specification}
@@ -130,7 +134,7 @@ As a user, I would like to:
 \multirow{5}{*}{User} & \multirow{5}{*}{User} & Static List of Analyzed Clips & Displays a static list of previously analyzed video clips for the user. The user can view, filter, or select from the list. & The system shall present a static list of analyzed clips, allowing users to filter by criteria such as date or category. \\ \cline{3-5}
                        &                        & Uploading Videos & Allows users to upload video files for analysis. & The system shall enable users to upload videos in various formats such as MP4, MOV, etc. \\ \cline{3-5}
                        &                        & Analysis of the uploaded Clips & Performs automatic analysis of the uploaded clips and presents results such as key moments, player performance, etc. & The system shall analyze the uploaded clips using predefined algorithms and present key results based on player performance and game statistics. \\ \cline{3-5}
-                       &                        & Player Statistics Dashboard & Presents a dashboard which displays the statistics and information about the user-selected player. & The system shall call the Transfermarkt API / refer to Transfermarkt data and display it in a dashboard. \\ \cline{3-5}
+                       &                        & Player Statistics Dashboard & Presents a dashboard which displays the statistics and information about the user-selected player. & The system shall refer to Transfermarkt data and display it in a dashboard. \\ \cline{3-5}
                        &                        & Filter Dashboard & Provides filtering options for dashboard data, allowing users to refine their search by criteria such as player name, player team, and date range. & The system shall allow users to filter dashboard data by various criteria such as player name, player team, and date range. \\ \hline
 \end{tabular}
 \caption{Description of the Use Cases diagram}
@@ -176,7 +180,7 @@ The application should be designed to allow for seamless and easy scalability, e
 3 & Project Topic Description & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 11/10/2024 & 17/10/2024 & $\checkmark$ \\ \hline
 4 & Problem Analysis and Research & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 12/10/2024 & 28/10/2024 & \\ \hline
 5 & Project Solution Description & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 29/10/2024 & 7/11/2024 & \\ \hline
-6 & Data Collection and Preparation / Setting up API & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 8/11/2024 & 10/11/2024 & \\ \hline
+6 & Data Collection and Preparation & Osman Aliyev Hubert Jaczyński Aleksander Klepka & 8/11/2024 & 10/11/2024 & \\ \hline
 7 & Fine Tuning Existing Model & Hubert Jaczyński Aleksander Klepka & 11/11/2024 & 13/11/2024 &  \\ \hline
 8 & GUI Implementation & Osman Aliyev Aleksander Klepka & 14/11/2024 & 17/11/2024 & \\ \hline
 9 & Dashboard Implementation & Osman Aliyev Aleksander Klepka & 18/11/2024 & 20/11/2024 &  \\ \hline
@@ -297,7 +301,7 @@ Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali Farhadi (2016). \textit{Y
 Peters, J. F. (2017). \textit{Foundations of Computer Vision: Computational Geometry, Visual Image Structures and Object Shape Detection}. Springer International Publishing AG.
 
 \bibitem{DFL Bundesliga Data Shootout}
-DFL Bundesliga Data Shootout. (2022). {Bundesliga}.\\ Available at: \url{https://www.bundesliga.com/en/aws-bundesliga-data-shootout}
+DFL Bundesliga Data Shootout. (2022). {Bundesliga}.\\ Available at: \url{https://www.bundesliga.com/en/aws-bundesliga-data-shootout} (last accessed: October 22, 2024).
 
 \bibitem{Kelleher2019}
 Kelleher, John D. (2019). \textit{Deep Learning}. MIT Press.
@@ -309,7 +313,12 @@ Ian Goodfellow and Yoshua Bengio and Aaron Courville (2016). \textit{Deep Learni
 Gary Bradski, Adrian Kaehler (2008). \textit{Learning OpenCV}. O'Reilly Media, Inc.
 
 \bibitem{Roboflow}
-Mohammad Faizar (2022). \textit{Roboflow}.\\ Available at: \url{https://medium.com/red-buffer/roboflow-d4e8c4b52515}
+Mohammad Faizar (2022). \textit{Roboflow}.\\ Available at: \url{https://medium.com/red-buffer/roboflow-d4e8c4b52515} (last accessed: October 22, 2024).
+
+\bibitem{Davidcariboo}
+David Cariboo (n.d.). \textit{Football Data from Transfermarkt}. Available at: \url{https://www.kaggle.com/datasets/davidcariboo/player-scores} (last accessed: October 22, 2024).
+
+
 \end{thebibliography} 
 
 \end{document}
