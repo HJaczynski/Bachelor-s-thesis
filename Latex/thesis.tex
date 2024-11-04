@@ -25,7 +25,7 @@
     % Logo
     \includegraphics[width=1\textwidth]{Images/mini.png} \\[12em]
     % Title
-    {\Huge \textbf{Group Project - LAB 1}} \\[3em]
+    {\Huge \textbf{Group Project - LAB 2}} \\[3em]
     % Subtitle
     {\Huge Project of an application \\ for Analysis of Football \\using Computer Vision} \\[3em]
     % Author names
@@ -38,7 +38,7 @@
 
 % Date at the bottom of the page
 \begin{center}
-    \Huge October 2024
+    \Huge November 2024
 \end{center}
 
 \clearpage
@@ -288,6 +288,52 @@ A detailed description of weaknesses and threats can be found in the section bel
 \vspace{0.5em}
 \noindent \textbf{Activities to minimize chances of occurrence:} Investigating what libraries versions are and using the same ones on our machines. Creating a virtual environment and having requirements.txt file in the repository so that each member can install the same versions of libraries.
 
+% SYSTEM ARCHITECTURE
+\pagebreak
+\section{System Architecture}
+TODO: Please refer to the sample document we were provided with to complete this section. Ensure that a System Architecture diagram is created and included. 
+\section{Modules Design}
+TODO: Describe each module of the application.
+\subsection{Frontend and Backend Module}
+\subsection{Dashboard Module}
+\subsection{Video Analysis Module}
+\section{Communication}
+TODO: We need to explain how our application communicates with certain items. For the dashboard, it is quite simple we will have a SQLite3 database with all the info. For the video analysis, its a bit more complex.
+\subsection{Video Analysis}
+\subsection{Player Statistics Database}
+\section{Main Components Description}
+TODO: Please refer to the sample document we were provided with to complete this section. Ensure that a diagram is created and included [Activity and class diagrams].
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/activity_diagram.png}
+  \caption{Activity Diagram}
+\end{figure}
+\clearpage
+
+
+\section{User Interface Vision}
+TODO: Images which represent the most basic version of the user interface need to be created and described. For us, this includes the video analysis tab and the player stats tab.
+\subsection{Video Analysis Tab}
+\subsection{Player Statistics Tab}
+\section{External Interfaces}
+TODO: Not sure if we need this section, considering we do not use external interfaces although i might be wrong.
+\section{Technology Selection}
+TODO: Explain the various libraries / frameworks used to develop the project. Please put them down as subsections for each component. Please add and use citations for each libary / framework, and refer to the documentations of each libary for proper descriptions. Additionally, add how the use of the library benefits the application.
+
+\subsection{Python}
+Due to its robust features 
+\subsection{Tkinter and Custom Tkinter}
+\subsection{SQLite3}
+TODO: Modify this and use citations.
+
+SQLite3 is a lightweight, integrated library in Python designed for efficient management and interaction with SQLite databases. The primary advantage of SQLite databases lies in their self-contained, serverless architecture, requiring minimal configuration, which makes them exceptionally suited for local data storage. Given these characteristics, SQLite3 is an optimal choice for this application, enabling streamlined access to the data. In this project, all CSV files sourced from the Transfermarkt dataset \cite{Davidcariboo} will be systematically stored in the database, facilitating more organized and efficient data retrieval and manipulation. 
+
+
+
+
+
+
+
 % BIBLIOGRAPHY
 \pagebreak
 
@@ -318,6 +364,11 @@ Mohammad Faizar (2022). \textit{Roboflow}.\\ Available at: \url{https://medium.c
 \bibitem{Davidcariboo}
 David Cariboo (n.d.). \textit{Football Data from Transfermarkt}. Available at: \url{https://www.kaggle.com/datasets/davidcariboo/player-scores} (last accessed: October 22, 2024).
 
+\bibitem{SQLite3} Python Software Foundation (2024). \textit{SQLite3 — DB-API 2.0 interface for SQLite databases}.\ Available at: \url{https://docs.python.org/3/library/sqlite3.html} (last accessed: October 22, 2024).
+
+\bibitem{Tkinter} Python Software Foundation (2024). \textit{Tkinter — Python interface to Tcl/Tk}.\ Available at: \url{https://docs.python.org/3/library/tkinter.html} (last accessed: October 22, 2024).
+
+\bibitem{CustomTkinter} Schimansky, Tom (2024). \textit{CustomTkinter Documentation}.\ Available at: \url{https://customtkinter.tomschimansky.com/} (last accessed: October 22, 2024).
 
 \end{thebibliography} 
 
