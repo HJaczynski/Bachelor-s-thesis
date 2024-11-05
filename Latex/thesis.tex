@@ -292,7 +292,8 @@ A detailed description of weaknesses and threats can be found in the section bel
 \pagebreak
 \section{System Architecture}
 The project of an application for Analysis of Football using Computer Vision consists of three main components (Figure 3). The frontend and backend module are responsible for the user interface and communication with the database and lets users interact with the system. It takes the user's input in the form of a video. The dashboard module is designed to display player statistics and information, while the video analysis module processes football clips to extract insights and key findings.\vspace{0.5em}
-The main part of the application - the video analysis module - is responsible for processing football clips and extracting valuable insights. It processes the received video clip, indentifies key components then stores the data, which is later utilized to showcase the results to the user. The player statistics database is used to store and retrieve player information and statistics, which are displayed in the dashboard module. The communication between the modules is facilitated by the frontend and backend module, which acts as an intermediary, ensuring seamless data flow between the components.
+
+\noindent The main part of the application - the video analysis module - is responsible for processing football clips and extracting valuable insights. It processes the received video clip, indentifies key components then stores the data, which is later utilized to showcase the results to the user. The player statistics database is used to store and retrieve player information and statistics, which are displayed in the dashboard module. The communication between the modules is facilitated by the frontend and backend module, which acts as an intermediary, ensuring seamless data flow between the components.
 \vspace{1.5em}
 \begin{figure}[ht]
   \centering
@@ -312,7 +313,7 @@ The Video Analysis Module processes football clips to extract valuable insights 
 The communication between the modules within our application is essential for delivering real-time and accurate data across the frontend, Player Statistics Database, and video analysis sections. Each module has a distinct responsibility, but they work together seamlessly to create an integrated user experience.
 
 \subsection{Frontend and Backend Communication}
-The Frontend and Backend communicate through RESTful APIs to handle requests from both the Dashboard and Video Analysis modules. These APIs serve as intermediaries, allowing the frontend to request player statistics data or initiate video analysis processes.
+The frontend and backend of the application are developed using Python, utilizing the Tkinter \cite{Tkinter} and CustomTkinter \cite{CustomTkinter} libraries, which facilitate communication through direct function calls. In such architecture, the frontend comprises user interface elements that invoke backend logic. For instance, when a user clicks a button to view video insights, a backend function retrieves this data and displays it in the user interface.
 \subsection{Video Analysis Communication}
 
 The Video Analysis Module is a core part of the application and requires complex communication between the frontend, backend, and processing components to deliver accurate insights. When a user uploads a video via the frontend, it is sent to the backend server through an API request, where the video is securely stored temporarily, initiating the video processing pipeline. The processed data is sequentially communicated to ensure synchronization and accuracy, with intermediate results stored as they are extracted and structured. The backend utilizes this structured data to build a comprehensive report, which is stored in a dedicated database optimized for analysis results. Once the video analysis completes, the backend notifies the frontend with a summary and updates the user interface, indicating that the analysis results are ready for viewing. Users can then access these insights and metrics generated from the processed video in the Video Analysis section.
@@ -320,13 +321,13 @@ The Video Analysis Module is a core part of the application and requires complex
 
 \subsection{Player Statistics Database Communication}
 
-The Player Statistics Database is a critical component for displaying player data in the Dashboard Module. The SQLite3 database holds detailed player performance data, including historical performance metrics, recent game statistics, and player profiles. When a user performs a search or filter action on the frontend, the request is sent to the backend, which queries the SQLite3 database. The backend retrieves the relevant records based on search criteria and formats them for frontend display. The backend sends the requested player data to the frontend to be displayed on the Player Statistics Dashboard. This includes real-time updates, ensuring the user has access to the latest player performance metrics.
+The Player Statistics Database is a critical component for displaying player data in the Dashboard Module. The SQLite3 database holds all the data obtained from the Transfermarkt dataset \cite{Davidcariboo}. When a user performs a search or filter action on the frontend, the request is sent to the backend, which queries the SQLite3 database. The backend retrieves the relevant records based on search criteria and formats them for frontend display. The backend sends the requested player data to the frontend to be displayed on the Player Statistics Dashboard. This includes real-time updates, ensuring the user has access to the latest player performance metrics.
 \clearpage
 
 \section{Main Components Description}
-\subsection{Activity Diagram} The activity diagram shown in Figure 4 illustrates the range of actions available within the application, from launching the app to accessing either the video insights or the player dashboard. Upon starting the application, the user is prompted to select the desired tab to proceed.
+\subsection{Activity Diagram} The activity diagram shown in Figure 4 illustrates the range of actions available within the application, from launching the app to accessing either the video insights or the player dashboard. Upon starting the application, the user is prompted to select the desired tab to proceed. \vspace{0.5em}
 
-\noindent In the case of video analysis, the user has the option to either select a preprocessed video or upload a custom video file. If a preprocessed video is selected, video insights are immediately available, and no further model processing is required. If the user uploads a custom video, the model must process the video before insights can be displayed.
+\noindent In the case of video analysis, the user has the option to either select a preprocessed video or upload a custom video file. If a preprocessed video is selected, video insights are immediately available, and no further model processing is required. If the user uploads a custom video, the model must process the video before insights can be displayed. \vspace{0.5em}
 
 \noindent If the user chooses the Player Statistics tab, they are required to search for and select a player. The application then retrieves the relevant information for the chosen player and presents it in the dashboard.
 
@@ -335,14 +336,27 @@ The Player Statistics Database is a critical component for displaying player dat
   \includegraphics[width=1\textwidth]{Images/activity_diagram.png}
   \caption{Activity Diagram}
 \end{figure}
+\clearpage
 
+\subsection{Class Diagram}
+Figure 5 presents the class diagram, which describes how the frontend, backend, and model communicate in order to make the application work.
+
+\vspace{0.5em}
+
+\noindent The frontend is responsible for taking input from the user, displaying different tab views, video insights, and the player dashboard. It consists of the App class, which serves as the main entry point of the application. This class creates and manages the user interface components, including the VideoAnalyzer and PlayerStatisticsDashboard classes. The VideoAnalyzer class allows users to upload new videos or select preprocessed ones, and subsequently presents the resulting insights derived from video analysis.\vspace{0.5em}
+
+\noindent The backend handles the data processing and interactions with the model and database. The DatabaseManager class is responsible for connecting to the SQLite database and executing queries to retrieve player information. The VideoAnalyzer class interacts with the YOLOModel to process videos. It utilizes the predict method from the YOLOModel class to analyze the uploaded video files, generating a DataFrame containing the insights needed for user interpretation.\vspace{0.5em}
+
+\noindent The PlayerStatisticsDashboard class is designed to facilitate the search and selection of players from the database. Once a player is selected, it retrieves and displays relevant player statistics in a clear and organized manner.\vspace{0.5em}
+
+\noindent Overall, this architecture allows for seamless communication between the user interface, backend processing, and model functionality, ensuring an efficient and responsive application for video analysis and player statistics.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{Images/class_diagram.png}
   \caption{Class Diagram}
 \end{figure}
 \clearpage
-\subsection{Class Diagram}
+
 
 \section{User Interface Vision}
 This section goes over the simplified version of the graphical user interface. The application will be split into two tabs, which are described in the sections below. The user can switch between these tabs using the tab selector at the top of the application.
@@ -395,10 +409,6 @@ YOLO (You Only Look Once) is a real-time object detection algorithm that frames 
 Roboflow is a tool designed to streamline the process of building computer vision models by simplifying dataset management, annotation, and preprocessing \cite{Roboflow}. It provides an end-to-end solution for preparing image datasets, generating augmented data, and exporting them in formats compatible with various machine learning frameworks.\vspace{0.5em}
 
 \noindent In this project, Roboflow is utilized to manage and preprocess the dataset used for training and fine-tuning the YOLO model. By leveraging Roboflow, we can efficiently annotate the football match images and videos, apply data augmentation techniques, and prepare the dataset in a format optimized for the YOLO algorithm. This enhances the quality of the training data, leading to improved model accuracy in detecting and classifying objects within the football footage. Roboflow's user-friendly interface and preprocessing capabilities significantly reduce the time and effort required for dataset preparation.
-
-
-
-
 
 % BIBLIOGRAPHY
 \pagebreak
