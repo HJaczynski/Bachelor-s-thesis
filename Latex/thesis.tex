@@ -366,6 +366,28 @@ CustomTkinter extends Tkinter’s capabilities by adding modern, customizable wi
 \subsection{SQLite3}
 SQLite3 is a lightweight, integrated library in Python designed for efficient management and interaction with SQLite databases. The primary advantage of SQLite databases lies in their self-contained, serverless architecture, requiring minimal configuration, which makes them exceptionally suited for local data storage. Additionally, SQLite allows accessing the database using a nonstandard variant of the SQL query language.\cite{SQLite3} Given these characteristics, SQLite3 is an optimal choice for this application, enabling streamlined access to the data. In this project, all CSV files  will be systematically stored in the database, facilitating more organized and efficient data retrieval and manipulation from the Transfermarkt dataset \cite{Davidcariboo}. 
 
+\subsection{OpenCV}
+
+OpenCV (Open Source Computer Vision Library) is an open-source computer vision and machine learning library designed to accelerate the use of machine perception in commercial products \cite{OpenCV}. It provides more than 2500 optimized algorithms for various computer vision tasks such as image processing, object detection, and image recognition. OpenCV is cross-platform and supports multiple programming languages, including Python, making it a versatile tool for computer vision projects.
+
+In this project, OpenCV is utilized for processing the football match footage by performing essential image processing tasks such as reading video files, frame extraction, and image preprocessing. It works in conjunction with the YOLO algorithm to enhance object detection and tracking of players, balls, goalposts, and referees in the video clips. OpenCV's efficient image processing capabilities are crucial for preparing the video data for analysis and ensuring accurate detection results.
+
+\subsection{YOLO}
+
+YOLO (You Only Look Once) is a real-time object detection algorithm that frames detection as a single regression problem, predicting bounding boxes and class probabilities directly from full images \cite{Yolo}. Known for its speed and accuracy, YOLO can process images at high frame rates while maintaining high detection precision, making it ideal for real-time applications.
+
+In this project, YOLO is employed to detect and classify key components within the football match footage, including players, balls, goalposts, and referees. By integrating YOLO into the video analysis module, the application can accurately identify and track these elements throughout the video clips. This facilitates the extraction of comprehensive statistics and insights about the match and player performances. The use of YOLO enables efficient processing of the video data, allowing for real-time or near-real-time analysis results.
+
+\subsection{Roboflow}
+
+Roboflow is a tool designed to streamline the process of building computer vision models by simplifying dataset management, annotation, and preprocessing \cite{Roboflow}. It provides an end-to-end solution for preparing image datasets, generating augmented data, and exporting them in formats compatible with various machine learning frameworks.
+
+In this project, Roboflow is utilized to manage and preprocess the dataset used for training and fine-tuning the YOLO model. By leveraging Roboflow, we can efficiently annotate the football match images and videos, apply data augmentation techniques, and prepare the dataset in a format optimized for the YOLO algorithm. This enhances the quality of the training data, leading to improved model accuracy in detecting and classifying objects within the football footage. Roboflow's user-friendly interface and preprocessing capabilities significantly reduce the time and effort required for dataset preparation.
+
+
+
+
+
 % BIBLIOGRAPHY
 \pagebreak
 
