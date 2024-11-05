@@ -331,9 +331,23 @@ The Player Statistics Database is a critical component for displaying player dat
 
 
 \section{User Interface Vision}
-TODO: Images which represent the most basic version of the user interface need to be created and described. For us, this includes the video analysis tab and the player stats tab.
+This section goes over the simplified version of the graphical user interface. The application will be split into two tabs, which are described in the sections below. The user can switch between these tabs using the tab selector at the top of the application.
 \subsection{Video Analysis Tab}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/video_analysis_wireframe.png}
+  \caption{Video Analysis Screen of the Application}
+\end{figure}
+\noindent The figure above illustrates the Video Analysis Tab, which serves as the initial screen presented to the user upon launching the application. Within this tab, the user is provided with two options: they may either select a preprocessed video from a dropdown menu or upload a custom video file. Upon selecting or uploading a video, the user receives a prompt confirming that the video is ready for either analysis or display. The user must then press a designated button to proceed. If the video requires analysis, it is sent to the model for processing; if the video is preprocessed, the corresponding video insights are displayed directly in the Video Playback section. Once the analysis is complete, the processed video is also displayed in this section, accompanied by the generated insights.
+\clearpage
 \subsection{Player Statistics Tab}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/player_statistics_wireframe.png}
+  \caption{Player Statistics Dashboard Screen of the Application}
+\end{figure}
+\noindent The figure above illustrates the second primary feature of the application: the Player Statistics Tab. Within this tab, the user must first search for and select a player to view detailed information. Once a player is selected, the relevant data is retrieved from the database and displayed in an organized dashboard format within the Player Statistics Dashboard section.
+\clearpage
 
 \section{Technology Selection}
 TODO: Explain the various libraries / frameworks used to develop the project. Please put them down as subsections for each component. Please add and use citations for each libary / framework, and refer to the documentations of each libary for proper descriptions. Additionally, add how the use of the library benefits the application.
