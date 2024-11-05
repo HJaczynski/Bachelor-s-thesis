@@ -309,11 +309,19 @@ The Dashboard Module is responsible for displaying player statistics and informa
 \subsection{Video Analysis Module}
 The Video Analysis Module processes football clips to extract valuable insights and key findings. It uses computer vision algorithms to identify and track key components in the video, such as players, balls, goalposts, and referees. The module analyzes the video clip and stores the extracted data, which is later used to generate insights and statistics. The Video Analysis Module is the core component of the application, providing users with detailed match analysis and player performance metrics.
 \section{Communication}
-TODO: We need to explain how our application communicates with certain items. For the dashboard, it is quite simple we will have a SQLite3 database with all the info. For the video analysis, its a bit more complex.
-\subsection{Video Analysis}
-\subsection{Player Statistics Database}
-\section{Main Components Description}
-TODO: Please refer to the sample document we were provided with to complete this section. Ensure that a diagram is created and included [Activity and class diagrams].
+The communication between the modules within our application is essential for delivering real-time and accurate data across the frontend, Player Statistics Database, and video analysis sections. Each module has a distinct responsibility, but they work together seamlessly to create an integrated user experience.
+
+\subsection{Frontend and Backend Communication}
+The Frontend and Backend communicate through RESTful APIs to handle requests from both the Dashboard and Video Analysis modules. These APIs serve as intermediaries, allowing the frontend to request player statistics data or initiate video analysis processes.
+\subsection{Video Analysis Communication}
+
+The Video Analysis Module is a core part of the application and requires complex communication between the frontend, backend, and processing components to deliver accurate insights. When a user uploads a video via the frontend, it is sent to the backend server through an API request, where the video is securely stored temporarily, initiating the video processing pipeline. The processed data is sequentially communicated to ensure synchronization and accuracy, with intermediate results stored as they are extracted and structured. The backend utilizes this structured data to build a comprehensive report, which is stored in a dedicated database optimized for analysis results. Once the video analysis completes, the backend notifies the frontend with a summary and updates the user interface, indicating that the analysis results are ready for viewing. Users can then access these insights and metrics generated from the processed video in the Video Analysis section.
+
+
+\subsection{Player Statistics Database Communication}
+
+The Player Statistics Database is a critical component for displaying player data in the Dashboard Module. The SQLite3 database holds detailed player performance data, including historical performance metrics, recent game statistics, and player profiles. When a user performs a search or filter action on the frontend, the request is sent to the backend, which queries the SQLite3 database. The backend retrieves the relevant records based on search criteria and formats them for frontend display. The backend sends the requested player data to the frontend to be displayed on the Player Statistics Dashboard. This includes real-time updates, ensuring the user has access to the latest player performance metrics.
+
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{Images/activity_diagram.png}
