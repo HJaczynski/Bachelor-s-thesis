@@ -300,12 +300,14 @@ The main part of the application - the video analysis module - is responsible fo
   \caption{Application Architecture Diagram}
 \end{figure}
 
-TODO: Please refer to the sample document we were provided with to complete this section. Ensure that a System Architecture diagram is created and included. 
-\section{Modules Design}Oh 
-TODO: Describe each module of the application.
+\section{Modules Design} 
+The application is composed of three components modules. Frontent Module, Dashboard Module, Video Analysis Module.
 \subsection{Frontend and Backend Module}
+The Frontend Module includes the User Interface, which has two separate tabs. One of them leads to the Video Analysis Module, where the user can upload a video for analysis. The other tab leads to the Player Statistics Dashboard, where users can search for a player and view detailed statistics. 
 \subsection{Dashboard Module}
+The Dashboard Module is responsible for displaying player statistics and information. It retrieves data from the Player Statistics Database and presents it in a user-friendly format. The dashboard allows users to search for specific players and filter the data based on various criteria, providing a comprehensive overview of the player's performance.
 \subsection{Video Analysis Module}
+The Video Analysis Module processes football clips to extract valuable insights and key findings. It uses computer vision algorithms to identify and track key components in the video, such as players, balls, goalposts, and referees. The module analyzes the video clip and stores the extracted data, which is later used to generate insights and statistics. The Video Analysis Module is the core component of the application, providing users with detailed match analysis and player performance metrics.
 \section{Communication}
 TODO: We need to explain how our application communicates with certain items. For the dashboard, it is quite simple we will have a SQLite3 database with all the info. For the video analysis, its a bit more complex.
 \subsection{Video Analysis}
