@@ -324,6 +324,12 @@ The Player Statistics Database is a critical component for displaying player dat
 \clearpage
 
 \section{Main Components Description}
+\subsection{Activity Diagram} The activity diagram shown in Figure 4 illustrates the range of actions available within the application, from launching the app to accessing either the video insights or the player dashboard. Upon starting the application, the user is prompted to select the desired tab to proceed.
+
+\noindent In the case of video analysis, the user has the option to either select a preprocessed video or upload a custom video file. If a preprocessed video is selected, video insights are immediately available, and no further model processing is required. If the user uploads a custom video, the model must process the video before insights can be displayed.
+
+\noindent If the user chooses the Player Statistics tab, they are required to search for and select a player. The application then retrieves the relevant information for the chosen player and presents it in the dashboard.
+
 \begin{figure}[ht]
   \centering
   \includegraphics[width=1\textwidth]{Images/activity_diagram.png}
@@ -336,7 +342,7 @@ The Player Statistics Database is a critical component for displaying player dat
   \caption{Activity Diagram}
 \end{figure}
 \clearpage
-
+\subsection{Class Diagram}
 
 \section{User Interface Vision}
 This section goes over the simplified version of the graphical user interface. The application will be split into two tabs, which are described in the sections below. The user can switch between these tabs using the tab selector at the top of the application.
@@ -374,21 +380,21 @@ SQLite3 is a lightweight, integrated library in Python designed for efficient ma
 
 \subsection{OpenCV}
 
-OpenCV (Open Source Computer Vision Library) is an open-source computer vision and machine learning library designed to accelerate the use of machine perception in commercial products \cite{OpenCV}. It provides more than 2500 optimized algorithms for various computer vision tasks such as image processing, object detection, and image recognition. OpenCV is cross-platform and supports multiple programming languages, including Python, making it a versatile tool for computer vision projects.
+OpenCV (Open Source Computer Vision Library) is an open-source computer vision and machine learning library designed to accelerate the use of machine perception in commercial products \cite{OpenCV}. It provides more than 2500 optimized algorithms for various computer vision tasks such as image processing, object detection, and image recognition. OpenCV is cross-platform and supports multiple programming languages, including Python, making it a versatile tool for computer vision projects.\vspace{0.5em}
 
-In this project, OpenCV is utilized for processing the football match footage by performing essential image processing tasks such as reading video files, frame extraction, and image preprocessing. It works in conjunction with the YOLO algorithm to enhance object detection and tracking of players, balls, goalposts, and referees in the video clips. OpenCV's efficient image processing capabilities are crucial for preparing the video data for analysis and ensuring accurate detection results.
+\noindent In this project, OpenCV is utilized for processing the football match footage by performing essential image processing tasks such as reading video files, frame extraction, and image preprocessing. It works in conjunction with the YOLO algorithm to enhance object detection and tracking of players, balls, goalposts, and referees in the video clips. OpenCV's efficient image processing capabilities are crucial for preparing the video data for analysis and ensuring accurate detection results.
 
 \subsection{YOLO}
 
-YOLO (You Only Look Once) is a real-time object detection algorithm that frames detection as a single regression problem, predicting bounding boxes and class probabilities directly from full images \cite{Yolo}. Known for its speed and accuracy, YOLO can process images at high frame rates while maintaining high detection precision, making it ideal for real-time applications.
+YOLO (You Only Look Once) is a real-time object detection algorithm that frames detection as a single regression problem, predicting bounding boxes and class probabilities directly from full images \cite{Yolo}. Known for its speed and accuracy, YOLO can process images at high frame rates while maintaining high detection precision, making it ideal for real-time applications.\vspace{0.5em}
 
-In this project, YOLO is employed to detect and classify key components within the football match footage, including players, balls, goalposts, and referees. By integrating YOLO into the video analysis module, the application can accurately identify and track these elements throughout the video clips. This facilitates the extraction of comprehensive statistics and insights about the match and player performances. The use of YOLO enables efficient processing of the video data, allowing for real-time or near-real-time analysis results.
+\noindent In this project, YOLO is employed to detect and classify key components within the football match footage, including players, balls, goalposts, and referees. By integrating YOLO into the video analysis module, the application can accurately identify and track these elements throughout the video clips. This facilitates the extraction of comprehensive statistics and insights about the match and player performances. The use of YOLO enables efficient processing of the video data, allowing for real-time or near-real-time analysis results.
 
 \subsection{Roboflow}
 
-Roboflow is a tool designed to streamline the process of building computer vision models by simplifying dataset management, annotation, and preprocessing \cite{Roboflow}. It provides an end-to-end solution for preparing image datasets, generating augmented data, and exporting them in formats compatible with various machine learning frameworks.
+Roboflow is a tool designed to streamline the process of building computer vision models by simplifying dataset management, annotation, and preprocessing \cite{Roboflow}. It provides an end-to-end solution for preparing image datasets, generating augmented data, and exporting them in formats compatible with various machine learning frameworks.\vspace{0.5em}
 
-In this project, Roboflow is utilized to manage and preprocess the dataset used for training and fine-tuning the YOLO model. By leveraging Roboflow, we can efficiently annotate the football match images and videos, apply data augmentation techniques, and prepare the dataset in a format optimized for the YOLO algorithm. This enhances the quality of the training data, leading to improved model accuracy in detecting and classifying objects within the football footage. Roboflow's user-friendly interface and preprocessing capabilities significantly reduce the time and effort required for dataset preparation.
+\noindent In this project, Roboflow is utilized to manage and preprocess the dataset used for training and fine-tuning the YOLO model. By leveraging Roboflow, we can efficiently annotate the football match images and videos, apply data augmentation techniques, and prepare the dataset in a format optimized for the YOLO algorithm. This enhances the quality of the training data, leading to improved model accuracy in detecting and classifying objects within the football footage. Roboflow's user-friendly interface and preprocessing capabilities significantly reduce the time and effort required for dataset preparation.
 
 
 
@@ -426,9 +432,9 @@ David Cariboo (n.d.). \textit{Football Data from Transfermarkt}. Available at: \
 
 \bibitem{SQLite3} Python Software Foundation (2024). \textit{SQLite3 — DB-API 2.0 interface for SQLite databases}.\ Available at: \url{https://docs.python.org/3/library/sqlite3.html} (last accessed: October 22, 2024).
 
-\bibitem{Tkinter} Python Software Foundation (2024). \textit{Tkinter — Python interface to Tcl/Tk}.\ Available at: \url{https://docs.python.org/3/library/tkinter.html} (last accessed: October 22, 2024).
+\bibitem{Tkinter} Python Software Foundation (2024). \textit{Tkinter — Python interface to Tcl/Tk}.\ Available at: \url{https://docs.python.org/3/library/tkinter.html} (last accessed: November 4, 2024).
 
-\bibitem{CustomTkinter} Schimansky, Tom (2024). \textit{CustomTkinter Documentation}.\ Available at: \url{https://customtkinter.tomschimansky.com/} (last accessed: October 22, 2024).
+\bibitem{CustomTkinter} Schimansky, Tom (2024). \textit{CustomTkinter Documentation}.\ Available at: \url{https://customtkinter.tomschimansky.com/} (last accessed: November 4, 2024).
 
 \end{thebibliography} 
 
