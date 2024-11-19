@@ -26,7 +26,8 @@ __pycache__/
 *.glo
 *.gls
 *.ist
-
+*.ipynb
+*.mp4
 # PDFLatex output files
 *.fls
 *.fdb_latexmk
