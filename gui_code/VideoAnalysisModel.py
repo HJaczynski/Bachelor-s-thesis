@@ -7,23 +7,23 @@ from tqdm import tqdm
 from sklearn.cluster import KMeans
 
 def extract_average_color(image):
-    # Convert image to HSV
+    
     image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    # Resize to reduce computation and noise
     image = cv2.resize(image, (32, 32))
-    # Compute the mean color
-    mean_color = image.mean(axis=(0, 1))
+    
+    # Compute the mean color which is important for team assignment 
+    mean_color = image.mean(axis=(0, 1)) 
     return mean_color
 
 def classify_player(dominant_color, team_colors):
     # Compute distances to each team color centroid
     distances = np.linalg.norm(team_colors - dominant_color, axis=1)
-    # Assign to the closest team
+    # Assign goalkeeper to the closest team
     team_id = np.argmin(distances)
     return team_id
 
 def get_center(box):
-    # box format: [x_min, y_min, x_max, y_max]
+    # box format: [x_min, y_min, x_max, y_max] for ball possesion 
     x_center = (box[0] + box[2]) / 2
     y_center = (box[1] + box[3]) / 2
     return np.array([x_center, y_center])
@@ -58,7 +58,6 @@ def extract_team_colors(video_path, model, device, stride=30, max_frames=10):
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
-    # Constants for class IDs (adjust based on your model)
     PLAYER_ID = 2
 
     initial_frames = []
@@ -112,7 +111,7 @@ def process_batch(frames, model, device, team_colors, ellipse_annotator, triangl
             class_id=result.boxes.cls.cpu().numpy().astype(int)
         )
 
-        # Separate detections by class
+        # Separate detections by classes
         ball_detections = detections[detections.class_id == BALL_ID]
         ball_detections.xyxy = sv.pad_boxes(xyxy=ball_detections.xyxy, px=10)
         all_detections = detections[detections.class_id != BALL_ID]
@@ -133,6 +132,7 @@ def process_batch(frames, model, device, team_colors, ellipse_annotator, triangl
             team_id = classify_player(dominant_color, team_colors)
             team_ids.append(team_id)
 
+        
         # Assign team IDs to player detections
         players_detections.class_id = np.array(team_ids)
 
@@ -171,7 +171,6 @@ def process_batch(frames, model, device, team_colors, ellipse_annotator, triangl
     return team_0_possession_frames, team_1_possession_frames
 
 def process_video(video_path, output_path, model, device, team_colors):
-    # Constants for class IDs (assuming your model's class order)
     BALL_ID = 0
     GOALKEEPER_ID = 1
     PLAYER_ID = 2
@@ -182,6 +181,7 @@ def process_video(video_path, output_path, model, device, team_colors):
         color=sv.ColorPalette.from_hex(['#00BFFF', '#FF1493', '#FFD700']),
         thickness=2
     )
+    #in this scenario we don't use labels 
     label_annotator = sv.LabelAnnotator(
         color=sv.ColorPalette.from_hex(['#00BFFF', '#FF1493', '#FFD700']),
         text_color=sv.Color.from_hex('#000000'),
@@ -200,11 +200,10 @@ def process_video(video_path, output_path, model, device, team_colors):
     fps = cap.get(cv2.CAP_PROP_FPS)
     out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
 
-    # Variables for possession tracking
     team_0_possession_frames = 0
     team_1_possession_frames = 0
 
-    # Threshold for possession (distance in pixels)
+    # Threshold for possession (distance in pixels) from player to ball 
     POSSESSION_THRESHOLD = 50
 
     frames = []
@@ -228,7 +227,7 @@ def process_video(video_path, output_path, model, device, team_colors):
             )
             frames = []
 
-    # Process any leftover frames
+    
     if len(frames) > 0:
         team_0_possession_frames, team_1_possession_frames = process_batch(
             frames, model, device, team_colors,
@@ -251,17 +250,12 @@ def process_video(video_path, output_path, model, device, team_colors):
 
     return team_0_possession_percent, team_1_possession_percent
 
-def main(video_path, output_path, model_path="models/player_detection.pt"):
-    # Set up GPU device
+def analyze_video_model(video_path, output_path, model_path="models/player_detection.pt"):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    # Load model
+    print(f"DECIVCE TYPE: {device}")
     model = load_model(model_path, device)
-
-    # Extract team colors from initial frames
     team_colors = extract_team_colors(video_path, model, device)
 
-    # Process the full video
     team_0_possession_percent, team_1_possession_percent = process_video(
         video_path, output_path, model, device, team_colors
     )
@@ -270,7 +264,5 @@ def main(video_path, output_path, model_path="models/player_detection.pt"):
     print(f"Team 0 Possession: {team_0_possession_percent:.2f}%")
     print(f"Team 1 Possession: {team_1_possession_percent:.2f}%")
 
-if __name__ == "__main__":
-    # Example usage:
-    # main("test.mp4", "ball_possession.mp4")
-    main("test.mp4", "ball_possession.mp4")
+    return team_0_possession_percent, team_1_possession_percent
+
