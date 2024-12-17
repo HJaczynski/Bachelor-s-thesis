@@ -64,7 +64,7 @@ class VideoAnalysisTab(ctk.CTkFrame):
         upload_button = ctk.CTkButton(button_frame, text="Upload Video", command=self.upload_video, font=("Calibri", 18, "bold"))
         upload_button.grid(row=0, column=0, padx=5)
 
-        self.preloaded_videos = ["ball_possesion.mp4", "Sample2.mp4", "Sample3.mp4"]
+        self.preloaded_videos = self.get_preloaded_videos()
         self.video_dropdown = ctk.CTkOptionMenu(button_frame, values=self.preloaded_videos, command=self.select_preloaded_video, font=("Calibri", 18, "bold"))
         self.video_dropdown.grid(row=0, column=1, padx=5)
 
@@ -83,6 +83,28 @@ class VideoAnalysisTab(ctk.CTkFrame):
             self.initialize_video(video_path)
         else:
             self.update_message(f"Error: Preloaded video {video_name} not found.")
+
+    def get_preloaded_videos(self, folder_name="preloaded_videos"):
+        """
+        Returns a list of file names in the specified folder.
+
+        Parameters:
+        folder_name (str): The name of the folder containing preloaded videos.
+
+        Returns:
+        list: A list of file names in the folder.
+        """
+        # Get the absolute path of the folder
+        folder_path = os.path.join(os.getcwd(), folder_name)
+
+        # Check if the folder exists
+        if not os.path.exists(folder_path):
+            print(f"Folder '{folder_name}' does not exist.")
+            return []
+
+        # List all files in the folder
+        file_list = [file for file in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, file))]
+        return file_list
     
     def analyze_video(self):
         if not self.uploaded_video_path:
@@ -91,8 +113,11 @@ class VideoAnalysisTab(ctk.CTkFrame):
         self.update_message(f"Analyzing video: {os.path.basename(self.uploaded_video_path)}")
         # Add analysis logic here
 
-        downloads = os.path.join(os.path.expanduser("~"), "Downloads")
-        output_path = os.path.join(downloads, "VideoOutput.mp4")
+        preloaded_videos_dir = os.path.join(os.getcwd(), "preloaded_videos")
+        if not os.path.exists(preloaded_videos_dir):
+            os.makedirs(preloaded_videos_dir)
+        #downloads = os.path.join(os.path.expanduser("~"), "Downloads")
+        output_path = os.path.join(preloaded_videos_dir, "VideoOutput.mp4")
 
         print(self.uploaded_video_path)
         print(output_path)
@@ -112,8 +137,8 @@ class VideoAnalysisTab(ctk.CTkFrame):
         video_path = fd.askopenfilename(
             title="Select a Video File",
             filetypes=(
-                ("Video files", "*.mp4;*.avi;*.mov;*.flv;*.mkv;*.webm"),
-                ("All files", "*.*"),
+                ("Video files", ".mp4;.avi;*.mov;*.flv;*.mkv;*.webm"),
+                ("All files", "."),
             ),
         )
 
@@ -161,6 +186,8 @@ class VideoAnalysisTab(ctk.CTkFrame):
         while self.cap.isOpened() and self.playing:
             ret, frame = self.cap.read()
             if ret:
+                # Resize the frame to 900x507
+                frame = cv2.resize(frame, (900, 507))
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 # Schedule the frame update in the main thread
                 self.after(1, lambda f=frame: update_frame(f))
@@ -200,7 +227,7 @@ class VideoAnalysisTab(ctk.CTkFrame):
 
 
 
-# if __name__ == "__main__":
+# if _name_ == "_main_":
 #     def on_closing():
 #         video_tab.stop_video()
 #         root.destroy()

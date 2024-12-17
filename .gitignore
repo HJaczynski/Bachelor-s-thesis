@@ -35,6 +35,7 @@ __pycache__/
 
 # Output PDFs
 *.pdf
+*.db
 
 # Temporary files
 *.tmp
