@@ -3,10 +3,10 @@ import sqlite3
 import pandas as pd
 
 cwd = os.getcwd()
-path = os.path.join(cwd, "gui_code/Transfermarkt Data\\")
+path = os.path.join(cwd, "Transfermarkt Data\\")
 print(path)
 
-filenames = ['appearances', 'club_games', 'clubs', 'game_events', 'game_lineups', 'games', 'player_valuations', 'players', 'transfers']
+filenames = ['appearances', 'player_valuations', 'filtered_players']
 
 for fn in filenames:
     filename = f'{path}{fn}.csv'

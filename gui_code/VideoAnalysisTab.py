@@ -70,13 +70,13 @@ class VideoAnalysisTab(ctk.CTkFrame):
         self.video_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
         self.video_frame.configure(width=800, height=394)
 
-        self.video_player_canvas = ctk.CTkCanvas(
+        self.main_video_player_canvas = ctk.CTkCanvas(
             self.video_frame, 
             width=800, 
             height=394, 
             bg="black"
         )
-        self.video_player_canvas.place(relx=0.5, rely=0.5, anchor="center")
+        self.main_video_player_canvas.place(relx=0.5, rely=0.5, anchor="center")
 
         # -------------------------
         #  CONTROLS (Below main video)
@@ -154,13 +154,13 @@ class VideoAnalysisTab(ctk.CTkFrame):
         self.video_frame2.configure(height=394)
 
         # Create the canvas
-        self.video_player_canvas2 = ctk.CTkCanvas(
+        self.secondary_video_player = ctk.CTkCanvas(
             self.video_frame2,
             width=280,
             height=394,
             bg="black"
         )
-        self.video_player_canvas2.place(relx=0.5, rely=0.5, anchor="center")
+        self.secondary_video_player.place(relx=0.5, rely=0.5, anchor="center")
 
         # Create the secondary dropdown
         self.secondary_dropdown = ctk.CTkOptionMenu(
@@ -415,16 +415,16 @@ class VideoAnalysisTab(ctk.CTkFrame):
             frame_main_resized = cv2.resize(frame_main, (800, 394))
             frame_main_rgb = cv2.cvtColor(frame_main_resized, cv2.COLOR_BGR2RGB)
             main_img = ImageTk.PhotoImage(image=Image.fromarray(frame_main_rgb))
-            self.video_player_canvas.create_image(0, 0, anchor="nw", image=main_img)
-            self.video_player_canvas.image = main_img  # keep reference
+            self.main_video_player_canvas.create_image(0, 0, anchor="nw", image=main_img)
+            self.main_video_player_canvas.image = main_img  # keep reference
 
             # SECONDARY
             if frame_secondary is not None:
                 frame_sec_resized = cv2.resize(frame_secondary, (280, 394))
                 frame_sec_rgb = cv2.cvtColor(frame_sec_resized, cv2.COLOR_BGR2RGB)
                 sec_img = ImageTk.PhotoImage(image=Image.fromarray(frame_sec_rgb))
-                self.video_player_canvas2.create_image(0, 0, anchor="nw", image=sec_img)
-                self.video_player_canvas2.image = sec_img  # keep reference
+                self.secondary_video_player.create_image(0, 0, anchor="nw", image=sec_img)
+                self.secondary_video_player.image = sec_img  # keep reference
 
             # Update slider
             self.slider.set(frame_num)
@@ -477,8 +477,8 @@ class VideoAnalysisTab(ctk.CTkFrame):
             if self.cap2 and self.cap2.isOpened():
                 self.cap2.release()
 
-        self.video_player_canvas.delete("all")
-        self.video_player_canvas2.delete("all")
+        self.main_video_player_canvas.delete("all")
+        self.secondary_video_player.delete("all")
 
     def seek_video(self, frame_position):
         """
@@ -494,8 +494,8 @@ class VideoAnalysisTab(ctk.CTkFrame):
                     frame_resized = cv2.resize(frame, (800, 394))
                     frame_rgb = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB)
                     img_tk = ImageTk.PhotoImage(image=Image.fromarray(frame_rgb))
-                    self.video_player_canvas.create_image(0, 0, anchor="nw", image=img_tk)
-                    self.video_player_canvas.image = img_tk
+                    self.main_video_player_canvas.create_image(0, 0, anchor="nw", image=img_tk)
+                    self.main_video_player_canvas.image = img_tk
 
             # If you want to keep the secondary in sync while paused:
             # if self.cap2:

@@ -2,13 +2,14 @@ import customtkinter as ctk
 from VideoAnalysisTab import VideoAnalysisTab
 from PlayerDashboardTab import PlayerDashboardTab
 from WelcomeTab import WelcomeTab
+#from WelcomeTabNew import WelcomeTab
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
         # App configuration
-        self.title("Football Analytics")
+        self.title("Goalytics")
         self.iconbitmap('Images/app.ico')
         self.geometry("1366x768")
         self.resizable(False, False)

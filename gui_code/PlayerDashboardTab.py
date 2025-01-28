@@ -29,11 +29,11 @@ class PlayerDashboardTab(ctk.CTkFrame):
         self.player_names_list = h.get_player_names_list()
 
         # initalize empty dataframe
-        self.curr_df = pd.DataFrame()
+        self.current_df = pd.DataFrame()
 
         # initialize empty graphs
-        self.curr_plotly = go.Figure()
-        self.curr_matplotlib = plt.figure()
+        self.current_plotly = go.Figure()
+        self.current_matplotlib = plt.figure()
 
 
         self.player_name_combobox = ctk.CTkComboBox(self, values=self.player_names_list, font=("Calibri", 18, "bold"))
@@ -43,21 +43,54 @@ class PlayerDashboardTab(ctk.CTkFrame):
         search_button = ctk.CTkButton(self, text="Search Player", command=self.get_player_info, font=("Calibri", 18, "bold"))
         search_button.grid(row=0, column=6, columnspan=2, padx=5, pady=5, sticky="ew")
 
-        self.graph_type_combobox = ctk.CTkComboBox(self, values=["Goals", "Assists", "Goals + Assists", "Cards", "Market Value"], font=("Calibri", 18, "bold"), command=self.update_graph)
+        self.graph_type_combobox = ctk.CTkComboBox(self, values=["Goals", "Assists", "Goals + Assists", "Cards", "Market Value", "Appearances", "Appearances per Competition"], font=("Calibri", 18, "bold"), command=self.update_graph)
         
         self.graph_type_combobox.grid(row=1, column=0, padx=5, pady=5, sticky="ew", columnspan=6)
 
-        reset_button = ctk.CTkButton(self, text="Reset Dashboard", command=self.reset_dashboard_tab, font=("Calibri", 18, "bold"))
-        reset_button.grid(row=1, column=6, columnspan=2, padx=5, pady=5, sticky="ew")
+        self.reset_button = ctk.CTkButton(self, text="Reset Dashboard", command=self.reset_dashboard_tab, font=("Calibri", 18, "bold"))
+        self.reset_button.grid(row=1, column=6, columnspan=2, padx=5, pady=5, sticky="ew")
 
-        self.club_icon_canvas = ctk.CTkCanvas(self, width=150, height=150)
-        self.club_icon_canvas.grid(row=2, column=6, columnspan=1, rowspan=5, padx=5, pady=5)
+        # Create the temporary frame with a fixed width
+        player_info_frame = ctk.CTkFrame(self, fg_color='#1d1e1e', corner_radius=10, width=330, height=500)
+        player_info_frame.grid(row=2, column=6, rowspan=10, columnspan=2, padx=5, pady=5, sticky="nsew")
 
-        self.player_image_canvas = ctk.CTkCanvas(self,  width=150, height=150)
-        self.player_image_canvas.grid(row=2, column=7, columnspan=1, rowspan=5, padx=5, pady=5)
+        # Configure the grid inside the temp_frame
+        player_info_frame.grid_rowconfigure(0, weight=1)  # First row
+        player_info_frame.grid_rowconfigure(1, weight=1)  # Second row
+        player_info_frame.grid_columnconfigure(0, weight=1)  # First column
+        player_info_frame.grid_columnconfigure(1, weight=1)  # Second column
 
-        self.result_label = ctk.CTkLabel(self, text=self.current_player, justify="left", fg_color='white', text_color='black', corner_radius=0, font=("Calibri", 20, "bold"))
-        self.result_label.grid(row=7, column=6, padx=5, pady=5, rowspan=5, sticky="nsew", columnspan=2)
+        self.club_icon_canvas = ctk.CTkCanvas(player_info_frame, width=200, height=200, bg="#1d1e1e", highlightthickness=0)
+        self.club_icon_canvas.grid(row=0, column=0, columnspan=1, padx=20, pady=20, sticky="nsew")
+
+        self.player_image_canvas = ctk.CTkCanvas(player_info_frame,  width=209, height=272, highlightthickness=0)
+        self.player_image_canvas.grid(row=0, column=1, columnspan=1, padx=20, pady=20, sticky="nsew")
+
+        string = "Name:\nDate of Birth (Age):\nCountry of Birth:\nCity of Birth:\nCountry of Citizenship:\nPosition:\nPreferred Foot:\nHeight:\nCurrent Club:\nMarket Value:\nHighest Market Value:"
+
+        info_label = ctk.CTkLabel(
+            player_info_frame,
+            text=string,
+            justify="center",
+            font=("Calibri", 18, "bold"),
+            fg_color="#1d1e1e", #2c2c2c
+            text_color="white",
+            corner_radius=10,
+            width=100
+        )
+        info_label.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+
+        self.result_label = ctk.CTkLabel(
+            player_info_frame,
+            text=self.current_player,
+            justify="center",
+            fg_color='#1d1e1e', ##1d1e1e
+            text_color='white',
+            corner_radius=10,
+            font=("Calibri", 18),
+            width=230
+        )
+        self.result_label.grid(row=1, column=1, padx=5, pady=5, sticky="nsew")
 
         interactive_dashboard_button = ctk.CTkButton(self, text="Interactive Dashboard", command=self.open_plotly_graph, font=("Calibri", 18, "bold"))
         interactive_dashboard_button.grid(row=12, column=0, columnspan=2, padx=5, pady=5, sticky="nsew")
@@ -71,19 +104,11 @@ class PlayerDashboardTab(ctk.CTkFrame):
         visit_transfermarkt_button = ctk.CTkButton(self, text="Visit Transfermarkt", command=self.redirect_to_transfermarkt, font=("Calibri", 18, "bold"))
         visit_transfermarkt_button.grid(row=12, column=6, columnspan=2, padx=5, pady=5, sticky="nsew")
 
-        # Add Dashboard Canvas widget (row 2, column 0 to row 10, column 3)
         self.graph_canvas = ctk.CTkCanvas(self)
         self.graph_canvas.grid(row=2, column=0, rowspan=10, columnspan=6, padx=5, pady=5, sticky="nsew")
         self.graph_canvas.bind("<Configure>", self.set_initial_graph_canvas)
 
-        # Initialize text (this will be centered later)
         self.tmp_graph_canvas_txt = None
-
-        try:
-            self.reset_dashboard_tab()
-        except Exception as e:
-            print(f"Exception error: {e}")
-            return None
 
 
     ### FUNCTIONS ### 
@@ -91,30 +116,6 @@ class PlayerDashboardTab(ctk.CTkFrame):
             self.graph_canvas.delete("all")
             self.clear_dashboard_text()
             self.update_graph_canvas()
-
-    def update_club_combobox(self, event):
-        """
-        Updates the club combobox based on the selected league.
-        """
-        # Get the selected league name from the combobox
-        selected_league_name = self.league_combobox.get()
-
-        # Find the corresponding league code
-        selected_league_code = None
-        for code, name in self.leagues_list:
-            if name == selected_league_name:
-                selected_league_code = code
-                break
-
-        # Filter clubs based on the selected league code
-        if selected_league_code:
-            filtered_clubs = [name for name, code in self.clubs_list if code == selected_league_code]
-        else:
-            filtered_clubs = []
-
-        # Update the club combobox values
-        self.club_combobox.configure(values=filtered_clubs)
-        self.club_combobox.set("")  # Clear any previous selection
         
 
     def generate_graph_matplotlib(self):
@@ -123,23 +124,27 @@ class PlayerDashboardTab(ctk.CTkFrame):
         if graph_type == "Goals":
             fig = self.current_player.generate_goals_mpl_graph()
             fig.tight_layout()
-            self.curr_df = self.current_player.goals_df
+            self.current_df = self.current_player.goals_df
         elif graph_type == "Assists": 
             fig = self.current_player.generate_assists_mpl_graph()
-            #self.curr_plotly = self.current_player.generate_assists_graph_plotly(self.curr_df)
-            self.curr_df = self.current_player.assists_df
+            self.current_df = self.current_player.assists_df
         elif graph_type == "Goals + Assists":
             fig = self.current_player.generate_ga_mpl_graph()
-            self.curr_df = self.current_player.ga_df
+            self.current_df = self.current_player.ga_df
         elif graph_type == "Cards":
             fig = self.current_player.generate_cards_mpl_graph()
-            self.curr_df = self.current_player.cards_df
+            self.current_df = self.current_player.cards_df
         elif graph_type == "Market Value":
             fig = self.current_player.generate_marketvalue_mpl_graph()
-            self.curr_df = self.current_player.marketvalue_df
+            self.current_df = self.current_player.marketvalue_df
+        elif graph_type == "Appearances":
+            fig = self.current_player.generate_appearances_per_year_mpl_graph()
+            self.current_df = self.current_player.appearances_per_year_df
+        elif graph_type == "Appearances per Competition":
+            fig = self.current_player.generate_appearances_per_competition_mpl_graph()
+            self.current_df = self.current_player.appearances_per_competition_df
 
-
-        self.curr_matplotlib = fig
+        self.current_matplotlib = fig
 
         return fig
 
@@ -152,13 +157,15 @@ class PlayerDashboardTab(ctk.CTkFrame):
             cursor = conn.cursor()
             
             # Execute the SQL query to fetch player by name
-            cursor.execute("SELECT * FROM players WHERE LOWER(name) = LOWER(?)", (player_name,))
+            cursor.execute("SELECT * FROM filtered_players WHERE LOWER(name) = LOWER(?)", (player_name,))
             
             # Fetch the first matching player record
             player_data = cursor.fetchone()
             
             # Close the connection
             conn.close()
+
+            print(player_data)
             
             # If player is found, return an instance of the Player class
             if player_data:
@@ -258,11 +265,6 @@ class PlayerDashboardTab(ctk.CTkFrame):
             print("Player not found.")
 
 
-    # Function def: Loads appropriate graph into the canvas
-    def load_graph(self):
-        return
-
-
     # Function def: 
     def redirect_to_transfermarkt(self):
         url = self.current_player.player_transfermarkt_url
@@ -306,7 +308,7 @@ class PlayerDashboardTab(ctk.CTkFrame):
             self.tmp_graph_canvas_txt = self.graph_canvas.create_text(
                 x, y,
                 text="Please search for a player to load a graph",
-                font=("Colibri", 24, "bold"),
+                font=("Roboto", 24, "bold"),
                 fill="black",
                 anchor="center",
                 justify="center"
@@ -334,15 +336,6 @@ class PlayerDashboardTab(ctk.CTkFrame):
 
 
     def save_graph_to_img(self):
-        """
-        Opens a file explorer to save the current Matplotlib figure to an image file.
-
-        Args:
-        - None
-
-        Returns:
-        - None
-        """
         # Open a file manager to specify the save location and file name 
         file_path = fd.asksaveasfilename(
             defaultextension=".png",
@@ -358,27 +351,13 @@ class PlayerDashboardTab(ctk.CTkFrame):
         if file_path:
             try:
                 # Save the Matplotlib figure to the specified file path
-                self.curr_matplotlib.savefig(file_path, format=file_path.split('.')[-1])
+                self.current_matplotlib.savefig(file_path, format=file_path.split('.')[-1])
                 print(f"Canvas saved successfully as {file_path}")
             except Exception as e:
                 print(f"An error occurred while saving the canvas: {e}")
     
 
-    def open_interactive_dashboard(self):
-
-        return
-    
-
     def save_df_to_csv(self):
-        """
-        Opens a file explorer to save a DataFrame to a CSV file.
-
-        Args:
-        - None
-
-        Returns:
-        - None
-        """
         try:
             # Open file explorer to choose save location and file name
             file_path = fd.asksaveasfilename(
@@ -394,39 +373,42 @@ class PlayerDashboardTab(ctk.CTkFrame):
                 return
 
             # Save the DataFrame to the selected file path
-            self.curr_df.to_csv(file_path, index=False)
+            self.current_df.to_csv(file_path, index=False)
             print(f"DataFrame successfully saved to {file_path}")
         except Exception as e:
             print(f"An error occurred while saving the file: {e}")
-    
-
-    def save_interactive_dashboard(self):
-        return
     
 
     def open_plotly_graph(self):
         graph_type = self.graph_type_combobox.get()
 
         if graph_type == "Goals":
-            self.curr_plotly = self.current_player.generate_goals_graph_plotly(self.curr_df)
+            self.current_plotly = self.current_player.generate_goals_graph_plotly()
         elif graph_type == "Assists": 
-            self.curr_plotly = self.current_player.generate_assists_graph_plotly(self.curr_df)
+            self.current_plotly = self.current_player.generate_assists_graph_plotly()
         elif graph_type == "Goals + Assists":
-            self.curr_plotly = self.current_player.generate_goals_assists_graph_plotly(self.curr_df)
+            self.current_plotly = self.current_player.generate_goals_assists_graph_plotly()
         elif graph_type == "Cards":
-            self.curr_plotly = self.current_player.generate_cards_graph_plotly(self.curr_df)
+            self.current_plotly = self.current_player.generate_cards_graph_plotly()
         elif graph_type == "Market Value":
-            self.curr_plotly = self.current_player.generate_marketvalue_graph_plotly(self.curr_df)
+            self.current_plotly = self.current_player.generate_marketvalue_graph_plotly()
+        elif graph_type == "Appearances":
+            self.current_plotly = self.current_player.generate_appearances_per_year_plotly()
+        elif graph_type == "Appearances per Competition":
+            self.current_plotly = self.current_player.generate_appearances_per_competition_plotly()
+
 
         try:
             # Save the figure as a temporary HTML file
-            temp_file = "temp_plotly_figure.html"
-            write_html(self.curr_plotly, file=temp_file, auto_open=False)
+            #temp_file = f"temp_plotly_figure.html"
+            temp_file = f"{self.current_player.get_player_id()}_{self.graph_type_combobox.get()}.html"
+            write_html(self.current_plotly, file=temp_file, auto_open=False)
             # Open the file in the default browser
             webbrowser.open(temp_file)
             print("Plotly figure opened in the default browser.")
         except Exception as e:
             print(f"An error occurred: {e}")
+
 
     def cleanup(self):
         # Close database connection

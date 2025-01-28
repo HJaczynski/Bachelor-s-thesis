@@ -1,0 +1,14 @@
+Team 1 possession: 53.23%
+Team 2 possession: 46.77%
+
+Avg team 1 speed: 13.58 km/h
+Avg team 2 speed: 14.85 km/h
+Avg ball speed: 27.20 km/h
+
+Avg team 1 distance: 34.61 m
+Avg team 2 distance: 72.79 m
+Avg ball distance: 5.15 m
+
+Total team 1 distance: 1626.68 m
+Total team 2 distance: 3420.97 m
+Total ball distance: 241.96 m
