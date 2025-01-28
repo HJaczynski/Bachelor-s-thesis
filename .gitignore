@@ -9,6 +9,7 @@ __pycache__/
 
 #Latex files
 # LaTeX intermediate files
+*.csv
 *.aux
 *.bbl
 *.blg

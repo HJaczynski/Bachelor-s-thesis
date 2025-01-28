@@ -218,11 +218,19 @@ class VideoAnalysisTab(ctk.CTkFrame):
         main_video_path = os.path.join(directory, "video_output.mp4")
         self.top_down_path = os.path.join(directory, "top_down_view.mp4")
         self.ball_path_path = os.path.join(directory, "ball_path.mp4")
+        statistics_file = os.path.join(directory, "analysis_stats.txt")
+        
 
         if os.path.exists(main_video_path):
             self.uploaded_main_video_path = main_video_path
             self.update_message(f"Preloaded video selected: {video_name}")
             self.initialize_video(main_video_path)
+            if os.path.exists(statistics_file):
+                with open(statistics_file, "r") as file:
+                    stats_str = file.read()
+                self.statistics_label.configure(text=stats_str)
+            else:
+                self.statistics_label.configure(text="Statistics not available.")
 
             self.no_pitch_label.grid_remove()  # hide the placeholder
             self.video_frame2.grid()
@@ -318,6 +326,10 @@ class VideoAnalysisTab(ctk.CTkFrame):
             f"Total ball distance: {counter * avg_distances[2]:.2f} m"
         )
         self.statistics_label.configure(text=stats_str)
+        # Write the stats to a text file
+        stats_file_path = os.path.join(output_path, "analysis_stats.txt")
+        with open(stats_file_path, "w") as stats_file:
+            stats_file.write(stats_str)
 
 
     # ---------------------------------------------------------
