@@ -4,8 +4,7 @@ from ultralytics import YOLO
 import supervision as sv
 import torch
 from tqdm import tqdm
-from sklearn.cluster import KMeans
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.linear_model import RANSACRegressor
 from concurrent.futures import ThreadPoolExecutor
 from sports.annotators.soccer import draw_pitch, draw_points_on_pitch, draw_pitch_voronoi_diagram
@@ -15,15 +14,39 @@ import pandas as pd
 from collections import defaultdict, deque
 import os
 
-
 CONFIG = SoccerPitchConfiguration()
 
+
 class PositionSmoother:
+    """
+    Smooths the positions of detected objects to reduce jitter in tracking.
+
+    Attributes:
+        alpha (float): Smoothing factor between 0 and 1.
+        last_positions (dict): Stores the last known positions of objects.
+    """
+
     def __init__(self, alpha=0.3):
+        """
+        Initializes the PositionSmoother with a specified smoothing factor.
+
+        Args:
+            alpha (float, optional): Smoothing factor. Defaults to 0.3.
+        """
         self.alpha = alpha
-        self.last_positions = {}  # key: object_id, val: (x, y)
+        self.last_positions = {}
 
     def smooth(self, object_id, current_position):
+        """
+        Applies exponential smoothing to the current position of an object.
+
+        Args:
+            object_id (hashable): Unique identifier for the object.
+            current_position (tuple): Current (x, y) position of the object.
+
+        Returns:
+            tuple: Smoothed (x, y) position.
+        """
         if object_id not in self.last_positions:
             self.last_positions[object_id] = current_position
             return current_position
@@ -36,25 +59,68 @@ class PositionSmoother:
         self.last_positions[object_id] = (new_x, new_y)
         return (new_x, new_y)
 
+
 ball_smoother = PositionSmoother(alpha=0.5)
 
+
 def extract_average_color(image):
+    """
+    Extracts the average HSV color from a given image.
+
+    Args:
+        image (numpy.ndarray): Input image in BGR format.
+
+    Returns:
+        numpy.ndarray: Average HSV color as a 1D array.
+    """
     image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     image = cv2.resize(image, (32, 32))
     mean_color = image.mean(axis=(0, 1))
     return mean_color
 
+
 def classify_player(dominant_color, team_colors):
+    """
+    Classifies a player into a team based on the closest team color.
+
+    Args:
+        dominant_color (numpy.ndarray): Dominant HSV color of the player.
+        team_colors (numpy.ndarray): Array of team HSV colors.
+
+    Returns:
+        int: Team ID (index of the closest team color).
+    """
     distances = np.linalg.norm(team_colors - dominant_color, axis=1)
     team_id = np.argmin(distances)
     return team_id
 
+
 def get_center(box):
+    """
+    Calculates the center coordinates of a bounding box.
+
+    Args:
+        box (iterable): Bounding box coordinates [x1, y1, x2, y2].
+
+    Returns:
+        numpy.ndarray: Center (x, y) coordinates.
+    """
     x_center = (box[0] + box[2]) / 2
     y_center = (box[1] + box[3]) / 2
     return np.array([x_center, y_center])
 
+
 def resolve_goalkeepers_team_id(players, goalkeepers):
+    """
+    Assigns team IDs to goalkeepers based on their distance to team centroids.
+
+    Args:
+        players (sv.Detections): Detected players with team IDs.
+        goalkeepers (sv.Detections): Detected goalkeepers.
+
+    Returns:
+        numpy.ndarray: Array of team IDs for each goalkeeper.
+    """
     if len(goalkeepers) == 0 or len(players) == 0:
         return np.array([])
 
@@ -75,28 +141,90 @@ def resolve_goalkeepers_team_id(players, goalkeepers):
 
     return np.array(goalkeepers_team_id)
 
+
 def load_model(model_path, device):
+    """
+    Loads a YOLO model from the specified path and moves it to the given device.
+
+    Args:
+        model_path (str): Path to the YOLO model file.
+        device (torch.device): Device to load the model onto.
+
+    Returns:
+        YOLO: Loaded YOLO model.
+    """
     model = YOLO(model_path)
     model.to(device)
     return model
 
+
 def run_yolo_model(frames, model, device):
+    """
+    Runs the YOLO model on a batch of frames.
+
+    Args:
+        frames (list of numpy.ndarray): List of frames to process.
+        model (YOLO): YOLO model for detection.
+        device (torch.device): Device to perform computation on.
+
+    Returns:
+        list: Detection results for each frame.
+    """
     return model(frames, device=device)
 
+
 def run_keypoint_model(frames, key_point_model, device):
+    """
+    Runs the keypoint detection model on a batch of frames.
+
+    Args:
+        frames (list of numpy.ndarray): List of frames to process.
+        key_point_model (YOLO): Keypoint detection model.
+        device (torch.device): Device to perform computation on.
+
+    Returns:
+        list: Keypoint detection results for each frame.
+    """
     return key_point_model(frames, device=device)
 
+
 def run_simultaneous_inference(frames, yolo_model, key_point_model, device):
+    """
+    Runs YOLO and keypoint models concurrently on a batch of frames.
+
+    Args:
+        frames (list of numpy.ndarray): List of frames to process.
+        yolo_model (YOLO): YOLO model for object detection.
+        key_point_model (YOLO): Keypoint detection model.
+        device (torch.device): Device to perform computation on.
+
+    Returns:
+        tuple: (YOLO results, Keypoint detection results)
+    """
     with ThreadPoolExecutor(max_workers=2) as executor:
         future_yolo = executor.submit(run_yolo_model, frames, yolo_model, device)
         future_keypoints = executor.submit(run_keypoint_model, frames, key_point_model, device)
-        
+
         results_yolo = future_yolo.result()
         results_keypoints = future_keypoints.result()
-    
+
     return results_yolo, results_keypoints
 
+
 def extract_team_colors(video_path, model, device, stride=30, max_frames=10):
+    """
+    Extracts the dominant team colors by analyzing initial frames of the video.
+
+    Args:
+        video_path (str): Path to the input video file.
+        model (YOLO): YOLO model for player detection.
+        device (torch.device): Device to perform computation on.
+        stride (int, optional): Frame interval for sampling. Defaults to 30.
+        max_frames (int, optional): Maximum number of frames to analyze. Defaults to 10.
+
+    Returns:
+        numpy.ndarray: Array containing the HSV colors of the two teams.
+    """
     cap = cv2.VideoCapture(video_path)
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -138,6 +266,7 @@ def extract_team_colors(video_path, model, device, stride=30, max_frames=10):
     cap.release()
     return team_colors
 
+
 def process_batch(
     frames,
     model,
@@ -156,71 +285,79 @@ def process_batch(
     out=None,
     team_0_possession_frames=0,
     team_1_possession_frames=0,
-    last_player_positions=None,       # not strictly needed if we use ByteTrack
+    last_player_positions=None,
     fps=30,
-    tracker=None,                     # ByteTrack instance
+    tracker=None,
     speed_buffer=None,
-    ball_speed_buffer=None,          # dict[track_id -> deque of last N real positions]
-    homography_conf_threshold=0.8     # min confidence for using a keypoint as reference
+    ball_speed_buffer=None,
+    homography_conf_threshold=0.8
 ):
     """
-    Processes a batch of frames:
-     - Runs YOLO & keypoint detection
-     - Determines ball possession
-     - Tracks players with ByteTrack
-     - Applies perspective transform to get real distances
-     - Averages last N frames to compute speed in km/h
-     - Computes average speed for each team and the ball
-     - Computes total distance covered by each team and the ball
-    """
+    Processes a batch of frames to perform detection, tracking, possession analysis, and annotation.
 
+    Args:
+        frames (list of numpy.ndarray): List of frames to process.
+        model (YOLO): YOLO model for object detection.
+        key_point_model (YOLO): Keypoint detection model.
+        device (torch.device): Device to perform computation on.
+        team_colors (numpy.ndarray): Array of team HSV colors.
+        POSSESSION_THRESHOLD (float): Distance threshold to determine ball possession.
+        BALL_ID (int): Class ID for the ball.
+        GOALKEEPER_ID (int): Class ID for goalkeepers.
+        PLAYER_ID (int): Class ID for players.
+        REFEREE_ID (int): Class ID for referees.
+        triangle_annotator (sv.TriangleAnnotator, optional): Annotator for triangles. Defaults to None.
+        ellipse_annotator (sv.EllipseAnnotator, optional): Annotator for ellipses. Defaults to None.
+        label_annotator (sv.LabelAnnotator, optional): Annotator for labels. Defaults to None.
+        ball_annotator (sv.LabelAnnotator, optional): Annotator for the ball. Defaults to None.
+        out (cv2.VideoWriter, optional): Video writer for output. Defaults to None.
+        team_0_possession_frames (int, optional): Initial possession frames for team 0. Defaults to 0.
+        team_1_possession_frames (int, optional): Initial possession frames for team 1. Defaults to 0.
+        last_player_positions (list, optional): Last known positions of players. Defaults to None.
+        fps (int, optional): Frames per second of the video. Defaults to 30.
+        tracker (sv.ByteTrack, optional): Object tracker. Defaults to None.
+        speed_buffer (defaultdict, optional): Buffer for tracking speeds. Defaults to None.
+        ball_speed_buffer (defaultdict, optional): Buffer for ball speed tracking. Defaults to None.
+        homography_conf_threshold (float, optional): Confidence threshold for homography. Defaults to 0.8.
+
+    Returns:
+        tuple: Contains updated possession frames, frame data, average speeds, and total distances.
+    """
     if last_player_positions is None:
         last_player_positions = []
 
     if tracker is None:
-        # fallback if not provided
         tracker = sv.ByteTrack()
         tracker.reset()
 
     if speed_buffer is None:
-        # fallback if not provided
-        speed_buffer = defaultdict(lambda: deque(maxlen=2))  # Only need last position for distance
+        speed_buffer = defaultdict(lambda: deque(maxlen=2))
 
     if ball_speed_buffer is None:
-        # fallback if not provided
-        ball_speed_buffer = defaultdict(lambda: deque(maxlen=2))  # Only need last position for distance
+        ball_speed_buffer = defaultdict(lambda: deque(maxlen=2))
 
-    # Initialize lists to accumulate speeds for each team and the ball
     all_player_speeds_team0 = []
     all_player_speeds_team1 = []
     all_ball_speeds = []
 
-    # Initialize total distance accumulators (in meters)
     total_distance_team0 = 0.0
     total_distance_team1 = 0.0
     total_distance_ball = 0.0
 
-    # 1) Run detection + keypoint model
     results, results_keypoints = run_simultaneous_inference(frames, model, key_point_model, device)
 
     frame_data = []
 
     for i, (result, result_kpts) in enumerate(zip(results, results_keypoints)):
-        # ------------------------------------------------------------
-        # Convert YOLO result to Supervision Detections
-        # ------------------------------------------------------------
+
         detections = sv.Detections(
             xyxy=result.boxes.xyxy.cpu().numpy(),
             confidence=result.boxes.conf.cpu().numpy(),
             class_id=result.boxes.cls.cpu().numpy().astype(int)
         )
 
-        # Convert YOLO keypoints to Supervision KeyPoints
         kp_detections = sv.KeyPoints.from_ultralytics(result_kpts)
 
-        # ---------------------------
-        # Compute Homography / Transform
-        # ---------------------------
         if kp_detections.xy is not None and len(kp_detections.xy) > 0:
             frame_ref_points = []
             pitch_ref_points = []
@@ -239,22 +376,16 @@ def process_batch(
         else:
             transformer = lambda pts: pts
 
-        # ------------------------------------------------------------
-        # Separate ball from other detections
-        # ------------------------------------------------------------
         ball_detections = detections[detections.class_id == BALL_ID]
         ball_detections.xyxy = sv.pad_boxes(xyxy=ball_detections.xyxy, px=10)
 
-        # Everything else
         all_detections = detections[detections.class_id != BALL_ID]
         all_detections = all_detections.with_nms(threshold=0.5, class_agnostic=True)
 
-        # Separate groups
         goalkeepers_detections = all_detections[all_detections.class_id == GOALKEEPER_ID]
         players_detections = all_detections[all_detections.class_id == PLAYER_ID]
         referees_detections = all_detections[all_detections.class_id == REFEREE_ID]
 
-        # Classify players into team 0 or 1
         team_ids = []
         for xyxy in players_detections.xyxy:
             crop = sv.crop_image(frames[i], xyxy)
@@ -263,20 +394,12 @@ def process_batch(
             team_ids.append(team_id)
         players_detections.class_id = np.array(team_ids)
 
-        # Resolve GK
         goalkeepers_detections.class_id = resolve_goalkeepers_team_id(players_detections, goalkeepers_detections)
 
-        # Merge them all
         all_detections = sv.Detections.merge([players_detections, goalkeepers_detections, referees_detections])
 
-        # ------------------------------------------------------------
-        # Track with ByteTrack -> stable .tracker_id
-        # ------------------------------------------------------------
         all_detections = tracker.update_with_detections(detections=all_detections)
 
-        # ------------------------------------------------------------
-        # Ball Possession Logic
-        # ------------------------------------------------------------
         if len(ball_detections) > 0 and len(players_detections) > 0:
             ball_center = get_center(ball_detections.xyxy[0])
             player_centers = np.array([get_center(box) for box in players_detections.xyxy])
@@ -290,25 +413,18 @@ def process_batch(
                 elif ball_holder_team_id == 1:
                     team_1_possession_frames += 1
 
-        # ------------------------------------------------------------
-        # Speed and Distance Calculation in Real Coordinates => KM/H & Meters
-        # ------------------------------------------------------------
-        # Only for players (class_id == 0,1)
         speed_detections = all_detections[np.isin(all_detections.class_id, [0, 1])]
         current_positions_px = speed_detections.get_anchors_coordinates(sv.Position.BOTTOM_CENTER)
 
-        # Transform from pixel => pitch coords (assumed meters)
         current_positions_m = transformer.transform_points(current_positions_px)
 
         speeds_kmh = []
         for track_id, (mx, my), team_id in zip(speed_detections.tracker_id, current_positions_m, speed_detections.class_id):
-            # Some detections might have track_id == -1 if not tracked
             if track_id == -1:
                 speed_kmh = 0.0
                 speeds_kmh.append(speed_kmh)
                 continue
 
-            # Calculate distance covered since last position
             if len(speed_buffer[track_id]) >= 1:
                 prev_mx, prev_my = speed_buffer[track_id][-1]
                 distance_m = np.hypot(mx - prev_mx, my - prev_my)
@@ -317,60 +433,47 @@ def process_batch(
                 elif team_id == 1:
                     total_distance_team1 += distance_m
 
-            # Append new real-world position to the buffer for both speed and distance calculations
             speed_buffer[track_id].append((mx, my))
 
-            # Speed calculation
             if len(speed_buffer[track_id]) >= 2:
-                (mx_old, my_old) = speed_buffer[track_id][0]  # oldest in buffer
-                (mx_new, my_new) = speed_buffer[track_id][-1] # newest
+                (mx_old, my_old) = speed_buffer[track_id][0]
+                (mx_new, my_new) = speed_buffer[track_id][-1]
                 dist_m = np.hypot(mx_new - mx_old, my_new - my_old)
 
-                # frames spanned in the buffer
                 frame_intervals = len(speed_buffer[track_id]) - 1
 
-                # speed in m/s
                 speed_m_s = dist_m * (fps / frame_intervals)
-                # convert to km/h
                 speed_kmh = speed_m_s * 3.6
             else:
                 speed_kmh = 0.0
 
             speeds_kmh.append(speed_kmh)
 
-            # Accumulate player speeds based on team
             if team_id == 0:
                 all_player_speeds_team0.append(speed_kmh)
             elif team_id == 1:
                 all_player_speeds_team1.append(speed_kmh)
 
-        # Build labels
         labels = [f"{s:.1f} km/h" for s in speeds_kmh]
 
         frame_bgr = cv2.cvtColor(frames[i], cv2.COLOR_RGB2BGR)
-        # ------------------------------------------------------------
-        # Ball speed and distance calculation
-        # ------------------------------------------------------------
+
         if len(ball_detections) > 0:
-            # Sort by confidence descending (or pick argmax)
             sorted_indices = np.argsort(-ball_detections.confidence)
-            best_index = sorted_indices[0]  # index of highest confidence ball
-            best_ball = ball_detections[best_index:best_index+1]  # slice with one detection
-            
+            best_index = sorted_indices[0]
+            best_ball = ball_detections[best_index:best_index+1]
+
             ball_detections_speed = best_ball.get_anchors_coordinates(sv.Position.BOTTOM_CENTER)
             ball_positions_m = transformer.transform_points(ball_detections_speed)
-            
+
             if len(ball_positions_m) > 0:
-                # Calculate distance covered since last position
                 if len(ball_speed_buffer[0]) >= 1:
                     prev_ball_mx, prev_ball_my = ball_speed_buffer[0][-1]
                     ball_distance_m = np.hypot(ball_positions_m[0][0] - prev_ball_mx, ball_positions_m[0][1] - prev_ball_my)
                     total_distance_ball += ball_distance_m
 
-                # Append current position to ball speed buffer
                 ball_speed_buffer[0].append(ball_positions_m[0])
 
-                # Speed calculation
                 if len(ball_speed_buffer[0]) >= 2:
                     (mx_old, my_old) = ball_speed_buffer[0][0]
                     (mx_new, my_new) = ball_speed_buffer[0][-1]
@@ -380,34 +483,23 @@ def process_batch(
                     speed_kmh = speed_m_s * 3.6
                 else:
                     speed_kmh = 0.0
-                
-                # Accumulate ball speeds
+
                 all_ball_speeds.append(speed_kmh)
-                
-                # Single label for the single detection
+
                 ball_label = [f"Ball: {speed_kmh:.1f} km/h"]
-                
-                # Annotate using just one box and one label
+
                 annotated_frame = ball_annotator.annotate(
-                    scene=frame_bgr, 
-                    detections=best_ball, 
+                    scene=frame_bgr,
+                    detections=best_ball,
                     labels=ball_label
                 )
             else:
-                # No positions => no speed label
                 annotated_frame = frame_bgr
         else:
-            # No ball at all
             annotated_frame = frame_bgr
 
-
-        # ------------------------------------------------------------
-        # Annotate Frame
-        # ------------------------------------------------------------
-        
         annotated_frame = ellipse_annotator.annotate(scene=annotated_frame, detections=all_detections)
         annotated_frame = triangle_annotator.annotate(scene=annotated_frame, detections=ball_detections)
-        
 
         if label_annotator is not None:
             annotated_frame = label_annotator.annotate(
@@ -418,9 +510,6 @@ def process_batch(
 
         out.write(annotated_frame)
 
-        # ------------------------------------------------------------
-        # Collect data for downstream usage
-        # ------------------------------------------------------------
         frame_ball_xy = ball_detections.get_anchors_coordinates(sv.Position.BOTTOM_CENTER)
         pitch_data = {
             'keypoints': kp_detections,
@@ -430,9 +519,6 @@ def process_batch(
         }
         frame_data.append(pitch_data)
 
-    # ------------------------------------------------------------
-    # Compute Average Speeds
-    # ------------------------------------------------------------
     if all_player_speeds_team0:
         average_player_speed_team0 = np.mean(all_player_speeds_team0)
     else:
@@ -448,11 +534,6 @@ def process_batch(
     else:
         average_ball_speed = 0.0
 
-    # ------------------------------------------------------------
-    # Compute Total Distances
-    # ------------------------------------------------------------
-    # Total distances are already accumulated in total_distance_team0, total_distance_team1, total_distance_ball
-
     return (
         team_0_possession_frames,
         team_1_possession_frames,
@@ -467,6 +548,21 @@ def process_batch(
 
 
 def process_video(video_path, output_path, model, key_point_model, device, team_colors, progress_callback=None):
+    """
+    Processes the entire video to perform detection, tracking, analysis, and annotation.
+
+    Args:
+        video_path (str): Path to the input video file.
+        output_path (str): Directory to save the annotated output video.
+        model (YOLO): YOLO model for object detection.
+        key_point_model (YOLO): Keypoint detection model.
+        device (torch.device): Device to perform computation on.
+        team_colors (numpy.ndarray): Array of team HSV colors.
+        progress_callback (callable, optional): Function to update progress. Defaults to None.
+
+    Returns:
+        tuple: Contains possession percentages, frame data, average speeds, distances, and frame count.
+    """
     BALL_ID = 0
     GOALKEEPER_ID = 1
     PLAYER_ID = 2
@@ -477,11 +573,8 @@ def process_video(video_path, output_path, model, key_point_model, device, team_
     tracker = sv.ByteTrack()
     tracker.reset()
 
-    # 2) This dictionary will hold the last few positions for each track_id
-    #    key = track_id (int), value = deque of (x, y) positions
-    speed_buffer = defaultdict(lambda: deque(maxlen=10))  # or maxlen=3 if you prefer
+    speed_buffer = defaultdict(lambda: deque(maxlen=10))
     ball_speed_buffer = defaultdict(lambda: deque(maxlen=30))
-    # Annotators
     ellipse_annotator = sv.EllipseAnnotator(
         color=sv.ColorPalette.from_hex(['#00BFFF', '#FF1493', '#FFD700']),
         thickness=2
@@ -503,7 +596,6 @@ def process_video(video_path, output_path, model, key_point_model, device, team_
         text_color=sv.Color.from_hex('#000000'),
         text_position=sv.Position.BOTTOM_CENTER
     )
-    
 
     cap = cv2.VideoCapture(video_path)
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -514,7 +606,6 @@ def process_video(video_path, output_path, model, key_point_model, device, team_
     frames = []
     batch_size = 16
 
-    # Variables for possession tracking
     team_0_possession_frames = 0
     team_1_possession_frames = 0
     team_1_speed = 0
@@ -526,16 +617,15 @@ def process_video(video_path, output_path, model, key_point_model, device, team_
     counter = 0
     frame_counter = 0
 
-
     all_frame_data = []
-    last_player_positions = np.array([])  # empty at the start
+    last_player_positions = np.array([])
 
     print("Processing video and collecting frame data...")
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-        
+
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frames.append(frame_rgb)
         frame_counter += 1
@@ -565,7 +655,6 @@ def process_video(video_path, output_path, model, key_point_model, device, team_
                  team_1_possession_frames,
                  last_player_positions,
                  fps,
-                 # Pass your tracker and the speed_buffer
                  tracker=tracker,
                  speed_buffer=speed_buffer,
                  ball_speed_buffer=ball_speed_buffer
@@ -605,7 +694,6 @@ def process_video(video_path, output_path, model, key_point_model, device, team_
                  team_1_possession_frames,
                  last_player_positions,
                  fps,
-                 # Pass your tracker and the speed_buffer
                  tracker=tracker,
                  speed_buffer=speed_buffer,
                  ball_speed_buffer=ball_speed_buffer
@@ -619,13 +707,11 @@ def process_video(video_path, output_path, model, key_point_model, device, team_
         ball_distance += avg_distance_ball
         counter += 1
 
-    
-    avg_speeds = [team_1_speed/counter, team_2_speed/counter , ball_speed/counter]
+    avg_speeds = [team_1_speed/counter, team_2_speed/counter, ball_speed/counter]
     avg_distances = [team_1_distance/counter, team_2_distance/counter, ball_distance/counter]
 
     cap.release()
 
-    # Calculate ball possession percentages
     total_possession_frames = team_0_possession_frames + team_1_possession_frames
     if total_possession_frames > 0:
         team_0_possession_percent = (team_0_possession_frames / total_possession_frames) * 100
@@ -638,9 +724,15 @@ def process_video(video_path, output_path, model, key_point_model, device, team_
 
 
 def create_ball_path(ball_positions, output_path="ball_path.mp4"):
+    """
+    Creates a video showing the ball's path on the soccer pitch.
+
+    Args:
+        ball_positions (list of numpy.ndarray): List of ball positions per frame.
+        output_path (str, optional): Path to save the ball path video. Defaults to "ball_path.mp4".
+    """
     print("Creating ball path on the pitch...")
 
-    # Flatten list of ball positions
     flattened_positions = [
         {'frame': frame_idx, 'x': pos[0], 'y': pos[1]}
         for frame_idx, frame_positions in enumerate(ball_positions)
@@ -649,7 +741,6 @@ def create_ball_path(ball_positions, output_path="ball_path.mp4"):
 
     ball_positions_df = pd.DataFrame(flattened_positions)
 
-    # Step 1: Removing outliers
     clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=20, linkage='single')
     positions = ball_positions_df[['x', 'y']].to_numpy()
     labels = clustering.fit_predict(positions)
@@ -657,7 +748,6 @@ def create_ball_path(ball_positions, output_path="ball_path.mp4"):
     inlier_mask = labels != -1
     inlier_positions = ball_positions_df[inlier_mask]
 
-    # Step 2: Smoothing ball path with Kalman filter
     smoothed_positions = []
     for _, row in inlier_positions.iterrows():
         x_smooth, y_smooth = ball_smoother.smooth(object_id='ball', current_position=(row['x'], row['y']))
@@ -665,11 +755,10 @@ def create_ball_path(ball_positions, output_path="ball_path.mp4"):
 
     smoothed_df = pd.DataFrame(smoothed_positions)
 
-    # Step 3: Identifying segments when the ball is moving on the ground
-    ransac = RANSACRegressor(residual_threshold=50)  # Adjust threshold based on dataset
+    ransac = RANSACRegressor(residual_threshold=50)
     ground_segments = []
     smoothed_array = smoothed_df[['x', 'y']].to_numpy()
-    if len(smoothed_array) > 5:  # Ensure enough points for RANSAC
+    if len(smoothed_array) > 5:
         try:
             ransac.fit(np.arange(len(smoothed_array)).reshape(-1, 1), smoothed_array)
             inlier_mask = ransac.inlier_mask_
@@ -677,11 +766,10 @@ def create_ball_path(ball_positions, output_path="ball_path.mp4"):
         except ValueError:
             print("RANSAC failed due to insufficient or unsuitable data for ground segment fitting.")
 
-    # Step 4: Finding points where the ball rebounds
     rebound_points = []
     velocities = np.diff(smoothed_array, axis=0)
     mean_velocity_change = np.mean(np.linalg.norm(velocities, axis=1))
-    threshold = mean_velocity_change * 1.25  # Use a dynamic threshold
+    threshold = mean_velocity_change * 1.25
 
     for i in range(1, len(velocities)):
         velocity_change = np.linalg.norm(velocities[i] - velocities[i - 1])
@@ -689,15 +777,14 @@ def create_ball_path(ball_positions, output_path="ball_path.mp4"):
             rebound_points.append(smoothed_df.iloc[i])
 
     rebound_df = pd.DataFrame(rebound_points)
-    rebound_df = rebound_df.sort_values('frame').reset_index(drop=True)  # Ensure sorted by frame
+    rebound_df = rebound_df.sort_values('frame').reset_index(drop=True)
 
-    # Step 5: Interpolating trajectory
     interpolated_positions = []
     for i in range(len(rebound_df) - 1):
         start = rebound_df.iloc[i]
         end = rebound_df.iloc[i + 1]
         num_points = int(end['frame'] - start['frame'])
-        if num_points > 1:  # Avoid single-point segments
+        if num_points > 1:
             x_interp = np.linspace(start['x'], end['x'], num_points)
             y_interp = np.linspace(start['y'], end['y'], num_points)
             for j in range(num_points):
@@ -705,14 +792,12 @@ def create_ball_path(ball_positions, output_path="ball_path.mp4"):
 
     interpolated_df = pd.DataFrame(interpolated_positions).sort_values('frame').reset_index(drop=True)
 
-
     final_positions = []
     grouped = interpolated_df.groupby('frame')
     for frame_idx, group in grouped:
         frame_positions = group[['x', 'y']].to_numpy()
         final_positions.append(frame_positions)
 
-    # Create output video
     print("Drawing ball path on the pitch...")
     annotated_frames = []
 
@@ -735,12 +820,14 @@ def create_ball_path(ball_positions, output_path="ball_path.mp4"):
     print(f"Ball path video created at {output_path}")
 
 
-def calculate_players_speed(all_frame_data):
-    pass
-
-    
-
 def create_pitch_video(all_frame_data, output_path):
+    """
+    Generates a top-down view video of the pitch with annotated player and ball positions.
+
+    Args:
+        all_frame_data (list of dict): List containing detection data for each frame.
+        output_path (str): Directory to save the generated pitch video and ball path.
+    """
     print("Generating pitch video...")
     annotated_frames = []
     ball_positions = []
@@ -798,14 +885,27 @@ def create_pitch_video(all_frame_data, output_path):
 
         annotated_frames.append(cv2.rotate(annotated_frame, cv2.ROTATE_90_CLOCKWISE))
 
-    create_ball_path(ball_positions, os.path.join(output_path,"ball_path.mp4"))
+    create_ball_path(ball_positions, os.path.join(output_path, "ball_path.mp4"))
 
-    pitch_out = cv2.VideoWriter(os.path.join(output_path,"top_down_view.mp4"), cv2.VideoWriter_fourcc(*'mp4v'), 30, (annotated_frames[0].shape[1], annotated_frames[0].shape[0]))
+    pitch_out = cv2.VideoWriter(os.path.join(output_path, "top_down_view.mp4"), cv2.VideoWriter_fourcc(*'mp4v'), 30, (annotated_frames[0].shape[1], annotated_frames[0].shape[0]))
     for frame in annotated_frames:
         pitch_out.write(frame)
     pitch_out.release()
 
+
 def analyze_video_model(video_path, output_path, model_path="models/player_detection2.pt", progress_callback=None):
+    """
+    Analyzes a soccer video to detect players, track movements, determine possession, and generate annotated outputs.
+
+    Args:
+        video_path (str): Path to the input video file.
+        output_path (str): Directory to save the annotated output videos.
+        model_path (str, optional): Path to the player detection model. Defaults to "models/player_detection2.pt".
+        progress_callback (callable, optional): Function to update progress. Defaults to None.
+
+    Returns:
+        tuple: Contains possession percentages, average speeds, distances, and frame count.
+    """
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = load_model(model_path, device)
     key_point_model = load_model("models/key_point_detection.pt", device)
@@ -813,9 +913,7 @@ def analyze_video_model(video_path, output_path, model_path="models/player_detec
     team_colors = extract_team_colors(video_path, model, device)
     team1_possesion, team2_possesion, all_frame_data, avg_speeds, avg_distances, counter = process_video(video_path, output_path, model, key_point_model, device, team_colors, progress_callback)
 
-    create_pitch_video(all_frame_data, output_path) 
+    create_pitch_video(all_frame_data, output_path)
     print("Pitch video with ball path created at pitch_with_path.mp4")
 
     return team1_possesion, team2_possesion, avg_speeds, avg_distances, counter
-    
-
